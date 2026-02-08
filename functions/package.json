@@ -1,0 +1,9 @@
+{
+  "name": "getreach-functions",
+  "type": "module",
+  "main": "index.js",
+  "engines": { "node": "20" },
+  "dependencies": {
+    "firebase-functions": "^6.3.0"
+  }
+}
