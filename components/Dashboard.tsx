@@ -194,7 +194,7 @@ const Dashboard: React.FC<Props> = ({ report }) => {
               </div>
             </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Audience potential by platform – bar chart (lead section) */}
@@ -265,7 +265,7 @@ const Dashboard: React.FC<Props> = ({ report }) => {
             </ul>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Your customers are here – all platforms and communities */}
       <section className="space-y-14">
@@ -358,7 +358,7 @@ const Dashboard: React.FC<Props> = ({ report }) => {
             );
           })}
         </div>
-      </div>
+      </section>
 
       {/* Slim persona */}
       <section className="bg-white rounded-[3rem] md:rounded-[4rem] p-8 md:p-14 border-2 border-blue-100/80 shadow-2xl shadow-blue-50/50">
@@ -390,7 +390,7 @@ const Dashboard: React.FC<Props> = ({ report }) => {
             Pain: {report.persona.painPoints.slice(0, 2).join('; ')}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* What to say + Keywords (dark section) */}
       <section className="bg-slate-900 rounded-[3rem] md:rounded-[5rem] p-10 md:p-16 lg:p-20 text-white overflow-hidden relative border-2 border-blue-900/30 shadow-2xl">
@@ -447,7 +447,7 @@ const Dashboard: React.FC<Props> = ({ report }) => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <div className="flex flex-col items-center gap-10 pt-16">
         <button
