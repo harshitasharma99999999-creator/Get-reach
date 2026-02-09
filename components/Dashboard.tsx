@@ -9,7 +9,8 @@ import {
   ArrowRight,
   Copy,
   MapPin,
-  BarChart3
+  BarChart3,
+  Search
 } from 'lucide-react';
 import {
   BarChart,
@@ -142,6 +143,59 @@ const Dashboard: React.FC<Props> = ({ report }) => {
           Based on real communities & live platform data — not a simulation
         </span>
       </div>
+
+      {/* Who's looking for your solution */}
+      {report.advanced.whoIsLookingForSolution && (
+        <div className="relative overflow-hidden rounded-[4rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50/30 to-sky-50/40 p-8 md:p-12 shadow-xl shadow-blue-50/80">
+          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-200/20 blur-[80px] rounded-full -z-0" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-200/60">
+                <Search className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 className="text-4xl font-black text-gray-900 tracking-tighter">Who&apos;s looking for your solution</h2>
+                <p className="text-gray-500 font-bold mt-1">People across the internet actively asking for what your product provides.</p>
+              </div>
+            </div>
+            <p className="text-gray-700 font-medium text-lg leading-relaxed mb-8 max-w-3xl">{report.advanced.whoIsLookingForSolution.summary}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="space-y-3">
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Search phrases & questions they use</p>
+                <ul className="space-y-2">
+                  {report.advanced.whoIsLookingForSolution.searchPhrases.map((phrase, i) => (
+                    <li key={i} className="flex items-start gap-2 text-gray-700 font-medium">
+                      <span className="text-blue-400 mt-1">&quot;</span>
+                      <span>{phrase}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Where they ask</p>
+                <ul className="space-y-2">
+                  {report.advanced.whoIsLookingForSolution.whereTheyAsk.map((place, i) => (
+                    <li key={i} className="text-gray-700 font-medium flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0" />
+                      {place}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Job titles & roles</p>
+                <div className="flex flex-wrap gap-2">
+                  {report.advanced.whoIsLookingForSolution.jobTitlesOrRoles.map((role, i) => (
+                    <span key={i} className="px-4 py-2 bg-blue-50 text-blue-800 rounded-xl text-sm font-bold border border-blue-100">
+                      {role}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Audience potential by platform – bar chart (lead section) */}
       <div className="relative overflow-hidden rounded-[4rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50/40 to-slate-50 p-8 md:p-12 shadow-xl shadow-blue-50/80">

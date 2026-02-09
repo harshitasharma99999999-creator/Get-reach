@@ -1,3 +1,6 @@
+/** Production app URL (custom domain). Used for canonical, sharing, and any absolute URLs. */
+export const APP_URL = "https://getreach.live";
+
 /**
  * Configuration for Firebase and Dodo Payments
  */

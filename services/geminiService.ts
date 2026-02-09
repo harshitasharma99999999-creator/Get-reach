@@ -64,7 +64,13 @@ const FALLBACK_REPORT: ReachReport = {
       { platform: "Reddit", example: "I built [product] after spending months on [specific pain]. Here’s what changed for us — happy to answer questions.", whyItWorks: "Relatable problem-solution; invites conversation." },
       { platform: "LinkedIn", example: "We cut [metric] by X% using [approach]. Key lesson: [insight]. What’s working for you?", whyItWorks: "Data + open question drives comments." },
       { platform: "X (Twitter)", example: "Ship: We just launched [feature] for [audience]. Try it: [link]. Feedback welcome.", whyItWorks: "Short, clear CTA; build-in-public vibe." }
-    ]
+    ],
+    whoIsLookingForSolution: {
+      summary: "SaaS founders, product managers, and growth leads who are actively looking for tools to find where their ideal customers are. They ask for recommendations in Reddit, Indie Hackers, and X, and search for terms like 'customer discovery' and 'where to find my customers'.",
+      searchPhrases: ["Where do my ideal customers hang out online?", "Best tools for customer discovery", "How to find my target audience on Reddit", "Customer acquisition channels for SaaS", "Indie hacker marketing communities"],
+      whereTheyAsk: ["r/startups", "r/SaaS", "Indie Hackers", "X #buildinpublic", "LinkedIn growth groups"],
+      jobTitlesOrRoles: ["SaaS Founder", "Product Manager", "Growth Lead", "Indie Hacker", "Marketing Lead"]
+    }
   }
 };
 
@@ -86,11 +92,12 @@ INSTRUCTIONS:
    - bestPostTypes: 2-4 concrete content types that work on this platform (e.g. "AMA posts", "How I built X", "Case studies").
    - frequency: recommended posting cadence (e.g. "2-3x per week", "Daily threads").
    - visibility, engagement, conversionIntent: set appropriately (High/Medium/Low) based on how relevant and convertible the audience is.
-3. In "advanced": 
+3. In "advanced":
    - competitorPresence: 1-2 sentences on where competitors show up and where there is white space.
    - gaps: 3-5 specific opportunities (e.g. "r/entrepreneur has no sticky threads about [topic]", "LinkedIn lacks comparison content").
    - keywordClusters: 5-10 real search phrases and hashtags this audience uses (specific, not generic).
    - whatToSayExamples: 3-6 examples across different platforms. Each must be a concrete, copy-paste style message (post or DM) and a short "whyItWorks" tied to that platform's norms.
+   - whoIsLookingForSolution: REQUIRED. Identify who across the internet is ACTIVELY SEARCHING FOR or ASKING FOR the solution this product provides. Include: (a) summary: 2-3 sentences describing these people and their intent; (b) searchPhrases: 5-10 real search queries, forum questions, or phrases they use (e.g. "best tool for X", "how do I find Y"); (c) whereTheyAsk: 3-5 specific places/channels where these questions appear (subreddits, forums, LinkedIn, X hashtags); (d) jobTitlesOrRoles: 3-6 job titles or roles of people who ask for this solution. Be specific to the product; only people who are looking for THIS solution.
 
 OUTPUT: Return valid JSON only. Be specific and actionable. If you cannot fetch the URL, use the domain and description to infer the product and still produce a detailed, professional report. NEVER return an error or non-JSON.
   `;
@@ -182,9 +189,19 @@ OUTPUT: Return valid JSON only. Be specific and actionable. If you cannot fetch 
                     },
                     required: ["platform", "example", "whyItWorks"]
                   }
+                },
+                whoIsLookingForSolution: {
+                  type: Type.OBJECT,
+                  properties: {
+                    summary: { type: Type.STRING },
+                    searchPhrases: { type: Type.ARRAY, items: { type: Type.STRING } },
+                    whereTheyAsk: { type: Type.ARRAY, items: { type: Type.STRING } },
+                    jobTitlesOrRoles: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  },
+                  required: ["summary", "searchPhrases", "whereTheyAsk", "jobTitlesOrRoles"]
                 }
               },
-              required: ["competitorPresence", "gaps", "keywordClusters", "whatToSayExamples"]
+              required: ["competitorPresence", "gaps", "keywordClusters", "whatToSayExamples", "whoIsLookingForSolution"]
             }
           },
           required: ["persona", "platforms", "strategies", "advanced"]

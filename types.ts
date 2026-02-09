@@ -34,6 +34,14 @@ export interface Strategy {
   isWorthIt: boolean;
 }
 
+/** Who across the internet is actively looking for / asking for the solution this product provides. */
+export interface WhoIsLookingForSolution {
+  summary: string;
+  searchPhrases: string[];
+  whereTheyAsk: string[];
+  jobTitlesOrRoles: string[];
+}
+
 export interface AdvancedInsights {
   competitorPresence: string;
   gaps: string[];
@@ -43,6 +51,8 @@ export interface AdvancedInsights {
     example: string;
     whyItWorks: string;
   }[];
+  /** Who is actively searching for or asking for the solution this product provides. Optional for backwards compatibility. */
+  whoIsLookingForSolution?: WhoIsLookingForSolution;
 }
 
 export interface ReachReport {

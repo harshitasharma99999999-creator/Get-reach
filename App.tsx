@@ -53,7 +53,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-blue-200/50 bg-gradient-to-b from-slate-50 via-white to-blue-50/40">
+    <div className="min-h-screen flex flex-col selection:bg-blue-200/50 bg-gradient-to-b from-slate-50 via-blue-50/30 to-sky-50/40">
       <Header
         onNavigate={handleNavigate}
         onAuth={() => setShowAuth(true)}
@@ -64,12 +64,13 @@ const App: React.FC = () => {
       <main className="relative flex-grow">
         {activeSection === 'home' && !report && !isLoading && (
           <div className="max-w-7xl mx-auto px-4 py-24 md:py-48 flex flex-col items-center relative overflow-hidden">
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-300/25 blur-[120px] rounded-full -z-10" />
-            <div className="absolute bottom-20 right-0 w-[400px] h-[400px] bg-sky-200/25 blur-[100px] rounded-full -z-10" />
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-400/20 blur-[140px] rounded-full -z-10" />
+            <div className="absolute bottom-20 right-0 w-[400px] h-[400px] bg-sky-300/20 blur-[100px] rounded-full -z-10" />
+            <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-indigo-200/15 blur-[80px] rounded-full -z-10" />
 
             <div className="text-center mb-20 max-w-5xl">
-              <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-blue-200/80 text-blue-600 px-6 py-3 rounded-full text-xs font-black mb-10 shadow-lg shadow-blue-100/50">
-                <Sparkles className="w-5 h-5 text-blue-500" />
+              <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm border-2 border-blue-200 text-blue-700 px-6 py-3 rounded-full text-xs font-black mb-10 shadow-xl shadow-blue-100/60">
+                <Sparkles className="w-5 h-5 text-blue-600" />
                 Professional customer discovery
               </div>
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gray-900 tracking-tighter mb-8 leading-[1.05]">
@@ -93,7 +94,7 @@ const App: React.FC = () => {
         {activeSection === 'pricing' && <Pricing userEmail={user?.email} />}
 
         {isLoading && (
-          <div className="max-w-7xl mx-auto px-4 py-40">
+          <div className="max-w-7xl mx-auto px-4 py-40 bg-gradient-to-b from-transparent via-blue-50/20 to-transparent">
             <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-8">
               <div className="relative mb-12">
                 <div className="w-52 h-52 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
@@ -102,16 +103,16 @@ const App: React.FC = () => {
                 </div>
               </div>
               <h2 className="text-4xl font-black text-gray-900 mb-3 tracking-tighter">Building your report</h2>
-              <p className="text-gray-500 text-lg max-w-md font-semibold">Analyzing your product and mapping exact platforms, communities, and messaging.</p>
+              <p className="text-gray-600 text-lg max-w-md font-semibold">Analyzing your product and mapping exact platforms, communities, and messaging.</p>
             </div>
           </div>
         )}
 
         {report && !isLoading && activeSection === 'home' && (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="bg-white/80 backdrop-blur-xl border-b border-gray-200/60 py-6 sticky top-0 z-40 shadow-sm">
+            <div className="bg-white/90 backdrop-blur-xl border-b border-blue-100 py-6 sticky top-0 z-40 shadow-lg shadow-blue-50/50">
               <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-                <button onClick={handleReset} className="flex items-center gap-3 text-blue-600 font-black hover:text-blue-800 transition-all bg-blue-50 px-6 py-3 rounded-2xl border border-blue-100 hover:shadow-md">
+                <button onClick={handleReset} className="flex items-center gap-3 text-blue-700 font-black hover:text-blue-800 transition-all bg-blue-50 px-6 py-3 rounded-2xl border-2 border-blue-100 hover:shadow-lg hover:border-blue-200">
                   <ArrowLeft className="w-5 h-5" /> New Analysis
                 </button>
                 <div className="flex items-center gap-4">
@@ -125,7 +126,7 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="bg-slate-900 text-white border-t border-slate-800 pt-16 pb-10">
+      <footer className="bg-slate-900 text-white border-t border-blue-900/40 pt-16 pb-10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-4">
@@ -134,10 +135,10 @@ const App: React.FC = () => {
             </div>
             <p className="text-sm text-slate-400 font-semibold">Built for founders and hackers.</p>
             <div className="flex items-center gap-6 text-sm font-semibold text-slate-400">
-              <button type="button" onClick={() => setShowPrivacy(true)} className="text-indigo-300 hover:text-white transition-colors">
+              <button type="button" onClick={() => setShowPrivacy(true)} className="text-blue-300 hover:text-white transition-colors">
                 Privacy Policy
               </button>
-              <a href="https://x.com/Harrshita_X" target="_blank" rel="noopener noreferrer" className="text-indigo-300 hover:text-white transition-colors">
+              <a href="https://x.com/Harrshita_X" target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-white transition-colors">
                 @Harrshita_X
               </a>
               <span>© 2026 GetReach</span>
