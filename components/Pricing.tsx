@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Check, Sparkles, Zap, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Sparkles, Star, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { triggerCheckout } from '@/lib/payments';
 import { DODO_CONFIG } from '@/config';
 
@@ -9,6 +8,7 @@ interface Props {
 }
 
 const Pricing: React.FC<Props> = ({ userEmail }) => {
+  const [showPaymentHelp, setShowPaymentHelp] = useState(false);
   return (
     <div className="py-24 md:py-36 max-w-7xl mx-auto px-4 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-blue-50/60 via-sky-50/30 to-transparent pointer-events-none -z-10" />
@@ -92,6 +92,30 @@ const Pricing: React.FC<Props> = ({ userEmail }) => {
       <p className="text-center text-gray-500 mt-8 font-medium text-sm max-w-lg mx-auto">
         Having trouble? We&apos;ll open checkout in a new tab so you can complete your purchase.
       </p>
+
+      <div className="mt-10 max-w-xl mx-auto border border-blue-100 rounded-2xl bg-blue-50/50 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowPaymentHelp(!showPaymentHelp)}
+          className="w-full flex items-center justify-between gap-2 px-5 py-4 text-left text-sm font-bold text-blue-800 hover:bg-blue-100/50 transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-blue-600" />
+            Payment not working? (Setup for site owners)
+          </span>
+          {showPaymentHelp ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {showPaymentHelp && (
+          <div className="px-5 pb-5 pt-0 text-sm text-gray-700 font-medium space-y-3 border-t border-blue-100/80">
+            <p>Get your site&apos;s payments working in 3 steps:</p>
+            <ol className="list-decimal list-inside space-y-2 text-gray-600">
+              <li>Get your Dodo <strong>secret</strong> API key from <a href="https://dashboard.dodopayments.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">dashboard.dodopayments.com</a> (Settings → API keys).</li>
+              <li>In Vercel: open your project → <strong>Settings</strong> → <strong>Environment Variables</strong> → Add <code className="bg-white px-1.5 py-0.5 rounded border border-blue-200">DODO_API_KEY</code> with that key → Save.</li>
+              <li>Redeploy the project (Deployments → ⋯ → Redeploy).</li>
+            </ol>
+          </div>
+        )}
+      </div>
       
       <p className="text-center text-gray-500 mt-6 font-bold uppercase text-xs tracking-[0.2em]">
         Secure payments powered by Dodo Payments

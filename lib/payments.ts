@@ -77,7 +77,11 @@ export const triggerCheckout = async (productId: string, userEmail?: string): Pr
     }
     if (!res.ok) {
       const msg = data?.error || 'Could not start checkout.';
-      alert(msg + (data?.error?.includes('DODO_API_KEY') ? ' The seller needs to set up the payment backend.' : ''));
+      const isSetup = msg.includes('DODO_API_KEY') || res.status === 500;
+      const setupSteps = isSetup
+        ? '\n\nTo enable payments:\n1. Get your Dodo secret API key from dashboard.dodopayments.com (Settings → API keys).\n2. In Vercel: your project → Settings → Environment Variables.\n3. Add DODO_API_KEY with that key, Save, then Redeploy.'
+        : '';
+      alert(msg + setupSteps);
       return;
     }
     checkoutUrl = data.checkoutUrl || null;
@@ -125,9 +129,12 @@ export const triggerCheckout = async (productId: string, userEmail?: string): Pr
     console.error('Checkout error', e);
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank', 'noopener');
-      alert('Something went wrong. Opening checkout in a new tab — you can complete your purchase there.');
+      alert('Opening checkout in a new tab — complete your purchase there.');
     } else {
-      alert('Something went wrong. Check your connection and try again. If the problem continues, the payment backend may need to be set up (createCheckout Cloud Function and DODO_API_KEY).');
+      alert(
+        'Something went wrong. Check your connection and try again.\n\n' +
+        'If you run this site: add DODO_API_KEY in Vercel (Settings → Environment Variables), then Redeploy.'
+      );
     }
   }
 };

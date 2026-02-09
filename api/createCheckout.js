@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   const apiKey = process.env.DODO_API_KEY;
   if (!apiKey) {
     return res.status(500).json({
-      error: "DODO_API_KEY not set. Add it in Vercel → Project → Settings → Environment Variables.",
+      error: "DODO_API_KEY not set. In Vercel: Project → Settings → Environment Variables → add DODO_API_KEY (your Dodo secret key from dashboard.dodopayments.com) → Save → Redeploy.",
     });
   }
 

@@ -63,20 +63,20 @@ const App: React.FC = () => {
 
       <main className="relative flex-grow">
         {activeSection === 'home' && !report && !isLoading && (
-          <div className="max-w-7xl mx-auto px-4 py-24 md:py-48 flex flex-col items-center relative overflow-hidden">
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-400/20 blur-[140px] rounded-full -z-10" />
-            <div className="absolute bottom-20 right-0 w-[400px] h-[400px] bg-sky-300/20 blur-[100px] rounded-full -z-10" />
-            <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-indigo-200/15 blur-[80px] rounded-full -z-10" />
+          <div className="max-w-7xl mx-auto px-4 py-20 md:py-40 flex flex-col items-center relative overflow-hidden">
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-400/15 blur-[140px] rounded-full -z-10" />
+            <div className="absolute bottom-20 right-0 w-[400px] h-[400px] bg-sky-300/15 blur-[100px] rounded-full -z-10" />
+            <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-blue-200/10 blur-[80px] rounded-full -z-10" />
 
-            <div className="text-center mb-20 max-w-5xl">
-              <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm border-2 border-blue-200 text-blue-700 px-6 py-3 rounded-full text-xs font-black mb-10 shadow-xl shadow-blue-100/60">
-                <Sparkles className="w-5 h-5 text-blue-600" />
+            <div className="text-center mb-16 md:mb-20 max-w-5xl">
+              <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm border-2 border-blue-200 text-blue-700 px-5 py-2.5 rounded-full text-xs font-black mb-8 shadow-lg shadow-blue-100/50">
+                <Sparkles className="w-4 h-4 text-blue-600" />
                 Professional customer discovery
               </div>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gray-900 tracking-tighter mb-8 leading-[1.05]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-gray-900 tracking-tighter mb-6 leading-[1.08]">
                 Find exactly where your ideal customers are.
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 leading-snug mb-14 max-w-2xl mx-auto font-semibold">
+              <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-12 max-w-2xl mx-auto font-semibold">
                 Enter your product URL. Get a detailed report: real platforms, subreddits, groups, and hashtags — plus what to say and when to post.
               </p>
             </div>
@@ -94,30 +94,30 @@ const App: React.FC = () => {
         {activeSection === 'pricing' && <Pricing userEmail={user?.email} />}
 
         {isLoading && (
-          <div className="max-w-7xl mx-auto px-4 py-40 bg-gradient-to-b from-transparent via-blue-50/20 to-transparent">
-            <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-8">
-              <div className="relative mb-12">
-                <div className="w-52 h-52 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+          <div className="max-w-7xl mx-auto px-4 py-32 md:py-40 bg-gradient-to-b from-transparent via-blue-50/10 to-transparent">
+            <div className="min-h-[55vh] flex flex-col items-center justify-center text-center p-8">
+              <div className="relative mb-10">
+                <div className="w-44 h-44 md:w-52 md:h-52 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <GetReachLogo className="w-24 h-24" />
+                  <GetReachLogo className="w-20 h-20 md:w-24 md:h-24" />
                 </div>
               </div>
-              <h2 className="text-4xl font-black text-gray-900 mb-3 tracking-tighter">Building your report</h2>
-              <p className="text-gray-600 text-lg max-w-md font-semibold">Analyzing your product and mapping exact platforms, communities, and messaging.</p>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-2 tracking-tighter">Building your report</h2>
+              <p className="text-gray-600 text-base md:text-lg max-w-md font-medium">Analyzing your product and mapping exact platforms, communities, and messaging.</p>
             </div>
           </div>
         )}
 
         {report && !isLoading && activeSection === 'home' && (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="bg-white/90 backdrop-blur-xl border-b border-blue-100 py-6 sticky top-0 z-40 shadow-lg shadow-blue-50/50">
+            <div className="bg-white/95 backdrop-blur-xl border-b border-blue-100/80 py-5 sticky top-0 z-40 shadow-md">
               <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-                <button onClick={handleReset} className="flex items-center gap-3 text-blue-700 font-black hover:text-blue-800 transition-all bg-blue-50 px-6 py-3 rounded-2xl border-2 border-blue-100 hover:shadow-lg hover:border-blue-200">
-                  <ArrowLeft className="w-5 h-5" /> New Analysis
+                <button onClick={handleReset} className="flex items-center gap-3 text-blue-700 font-black hover:text-blue-800 transition-all bg-blue-50 px-5 py-2.5 rounded-xl border-2 border-blue-100 hover:shadow-md hover:border-blue-200 text-sm">
+                  <ArrowLeft className="w-4 h-4" /> New Analysis
                 </button>
-                <div className="flex items-center gap-4">
-                  <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse ring-4 ring-blue-500/20" />
-                  <span className="text-gray-900 font-black text-sm uppercase tracking-widest">Report Ready</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse ring-2 ring-blue-500/30" />
+                  <span className="text-gray-800 font-black text-xs uppercase tracking-widest">Report Ready</span>
                 </div>
               </div>
             </div>

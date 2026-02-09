@@ -135,27 +135,27 @@ const Dashboard: React.FC<Props> = ({ report }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-20 pb-40 space-y-24">
+    <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 pb-48 space-y-28 md:space-y-32">
       {/* Real data badge */}
-      <div className="flex flex-wrap items-center justify-center gap-3 py-4">
-        <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold">
-          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+      <div className="flex flex-wrap items-center justify-center gap-3 py-6">
+        <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-50/90 border-2 border-emerald-200 text-emerald-800 text-sm font-bold shadow-sm">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
           Based on real communities & live platform data — not a simulation
         </span>
       </div>
 
       {/* Who's looking for your solution */}
       {report.advanced.whoIsLookingForSolution && (
-        <div className="relative overflow-hidden rounded-[4rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50/30 to-sky-50/40 p-8 md:p-12 shadow-xl shadow-blue-50/80">
-          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-200/20 blur-[80px] rounded-full -z-0" />
+        <section className="relative overflow-hidden rounded-[3rem] md:rounded-[4rem] border-2 border-blue-100/90 bg-gradient-to-br from-white via-blue-50/20 to-sky-50/30 p-8 md:p-14 shadow-2xl shadow-blue-50/60">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-200/15 blur-[100px] rounded-full -z-0" />
           <div className="relative z-10">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-200/60">
+            <div className="flex items-center gap-5 mb-8">
+              <div className="bg-blue-600 p-3.5 rounded-2xl shadow-lg shadow-blue-300/40">
                 <Search className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-4xl font-black text-gray-900 tracking-tighter">Who&apos;s looking for your solution</h2>
-                <p className="text-gray-500 font-bold mt-1">People across the internet actively asking for what your product provides.</p>
+                <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter">Who&apos;s looking for your solution</h2>
+                <p className="text-gray-500 font-bold mt-1.5 text-lg">People across the internet actively asking for what your product provides.</p>
               </div>
             </div>
             <p className="text-gray-700 font-medium text-lg leading-relaxed mb-8 max-w-3xl">{report.advanced.whoIsLookingForSolution.summary}</p>
@@ -198,19 +198,19 @@ const Dashboard: React.FC<Props> = ({ report }) => {
       )}
 
       {/* Audience potential by platform – bar chart (lead section) */}
-      <div className="relative overflow-hidden rounded-[4rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50/40 to-slate-50 p-8 md:p-12 shadow-xl shadow-blue-50/80">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200/25 blur-[100px] rounded-full -z-0" />
+      <section className="relative overflow-hidden rounded-[3rem] md:rounded-[4rem] border-2 border-blue-100/90 bg-gradient-to-br from-white via-blue-50/30 to-slate-50/50 p-8 md:p-14 shadow-2xl shadow-blue-50/60">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200/20 blur-[100px] rounded-full -z-0" />
         <div className="relative z-10">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-200/60">
+          <div className="flex items-center gap-5 mb-8">
+            <div className="bg-blue-600 p-3.5 rounded-2xl shadow-lg shadow-blue-300/40">
               <BarChart3 className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-4xl font-black text-gray-900 tracking-tighter">Audience potential by platform</h2>
-              <p className="text-gray-500 font-bold mt-1">Prioritize by potential and audience volume.</p>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter">Audience potential by platform</h2>
+              <p className="text-gray-500 font-bold mt-1.5 text-lg">Prioritize by potential and audience volume.</p>
             </div>
           </div>
-          <div className="h-[320px] w-full mt-8">
+          <div className="h-[320px] w-full mt-10">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 12, right: 12, left: 12, bottom: 12 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -256,9 +256,9 @@ const Dashboard: React.FC<Props> = ({ report }) => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-8 p-6 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <p className="text-sm font-black text-slate-700 uppercase tracking-wider mb-3">How to use this report</p>
-            <ul className="space-y-2 text-slate-600 font-medium">
+          <div className="mt-10 p-7 rounded-2xl bg-slate-50/90 border-2 border-slate-200/80">
+            <p className="text-sm font-black text-slate-700 uppercase tracking-wider mb-4">How to use this report</p>
+            <ul className="space-y-3 text-slate-600 font-medium text-base">
               <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Start with the highest-potential platforms in the chart above.</li>
               <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Click community names to open Reddit, X, LinkedIn, etc., and use &quot;Go to [platform]&quot; to explore further.</li>
               <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Use the &quot;What to say&quot; and keyword sections below to tailor your posts.</li>
@@ -268,26 +268,26 @@ const Dashboard: React.FC<Props> = ({ report }) => {
       </div>
 
       {/* Your customers are here – all platforms and communities */}
-      <div className="space-y-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <section className="space-y-14">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="max-w-2xl">
-            <h2 className="text-5xl font-black text-gray-900 tracking-tighter mb-4">Your customers are here</h2>
-            <p className="text-gray-500 text-xl font-medium mb-2">Exact platforms and communities where your ideal users are already active.</p>
-            <p className="text-gray-500 font-medium">Click any community to open it; use &quot;Go to [platform]&quot; to dive into Reddit, X, LinkedIn, and more.</p>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter mb-5">Your customers are here</h2>
+            <p className="text-gray-500 text-lg md:text-xl font-medium mb-2 leading-relaxed">Exact platforms and communities where your ideal users are already active.</p>
+            <p className="text-gray-500 font-medium text-base">Click any community to open it; use &quot;Go to [platform]&quot; to dive into Reddit, X, LinkedIn, and more.</p>
           </div>
-          <div className="bg-white px-6 py-3 rounded-2xl border border-blue-100 shadow-sm text-xs font-black text-blue-600 uppercase tracking-widest">
+          <div className="bg-white px-6 py-3.5 rounded-2xl border-2 border-blue-100 shadow-md text-xs font-black text-blue-600 uppercase tracking-widest">
             {report.platforms.length} channels
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
           {report.platforms.map((platform, i) => {
             const communities = normalizeCommunities(platform);
             const potential = intentToPotential(platform.conversionIntent);
             return (
               <div
                 key={i}
-                className="relative overflow-hidden bg-white rounded-[3.5rem] p-10 border border-blue-100/80 hover:border-blue-300 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-50/60 group cursor-default bg-gradient-to-b from-white to-blue-50/30"
+                className="relative overflow-hidden bg-white rounded-[3rem] md:rounded-[3.5rem] p-8 md:p-10 border-2 border-blue-100/80 hover:border-blue-200 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-50/50 group cursor-default bg-gradient-to-b from-white to-blue-50/20"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
                   <div className="bg-slate-900 text-white px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg">
@@ -361,14 +361,14 @@ const Dashboard: React.FC<Props> = ({ report }) => {
       </div>
 
       {/* Slim persona */}
-      <div className="bg-white rounded-[4rem] p-10 md:p-12 border border-blue-100/80 shadow-xl shadow-blue-50/60">
-        <div className="flex items-center gap-6 mb-8">
-          <div className="bg-blue-600 p-4 rounded-3xl shadow-lg shadow-blue-200/60">
+      <section className="bg-white rounded-[3rem] md:rounded-[4rem] p-8 md:p-14 border-2 border-blue-100/80 shadow-2xl shadow-blue-50/50">
+        <div className="flex items-center gap-6 mb-10">
+          <div className="bg-blue-600 p-4 rounded-3xl shadow-lg shadow-blue-300/40">
             <Users className="w-10 h-10 text-white" />
           </div>
           <div>
-            <h2 className="text-3xl font-black text-gray-900 tracking-tighter">Who they are</h2>
-            <p className="text-gray-500 font-bold uppercase text-xs tracking-widest">Ideal customer</p>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter">Who they are</h2>
+            <p className="text-gray-500 font-bold uppercase text-xs tracking-widest mt-1">Ideal customer</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-3 mb-6">
@@ -393,12 +393,12 @@ const Dashboard: React.FC<Props> = ({ report }) => {
       </div>
 
       {/* What to say + Keywords (dark section) */}
-      <div className="bg-slate-900 rounded-[5rem] p-12 md:p-20 text-white overflow-hidden relative border border-blue-900/30">
+      <section className="bg-slate-900 rounded-[3rem] md:rounded-[5rem] p-10 md:p-16 lg:p-20 text-white overflow-hidden relative border-2 border-blue-900/30 shadow-2xl">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/15 blur-[120px] rounded-full" />
-        <div className="relative z-10 space-y-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div className="space-y-10">
-              <h3 className="text-3xl font-black flex items-center gap-4">
+        <div className="relative z-10 space-y-14 md:space-y-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
+            <div className="space-y-8 md:space-y-10">
+              <h3 className="text-2xl md:text-3xl font-black flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-500/30">
                   <Lightbulb className="w-6 h-6 text-blue-400" />
                 </div>
@@ -449,13 +449,13 @@ const Dashboard: React.FC<Props> = ({ report }) => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-8 pt-12">
+      <div className="flex flex-col items-center gap-10 pt-16">
         <button
           onClick={handleCopyList}
-          className="flex items-center gap-4 bg-white text-gray-900 px-12 py-6 rounded-[2.5rem] font-black text-xl shadow-xl border border-blue-100 hover:shadow-2xl hover:border-blue-200 hover:-translate-y-0.5 transition-all active:scale-95 group"
+          className="flex items-center gap-4 bg-white text-gray-900 px-10 md:px-14 py-5 md:py-6 rounded-[2rem] md:rounded-[2.5rem] font-black text-lg md:text-xl shadow-xl border-2 border-blue-100 hover:shadow-2xl hover:border-blue-200 hover:-translate-y-0.5 transition-all active:scale-95"
         >
           Copy list
-          <Copy className="w-6 h-6 text-blue-600" />
+          <Copy className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
         </button>
         <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">End of report</p>
       </div>

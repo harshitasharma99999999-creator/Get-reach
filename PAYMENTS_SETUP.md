@@ -7,6 +7,17 @@ You can run payments **without upgrading to Firebase’s paid Blaze plan** by us
 - **`api/createCheckout.js`** – Vercel serverless function that creates a Dodo checkout session. It reads your secret API key from the environment.
 - The app calls **same-origin** `/api/createCheckout` when it’s running on your Vercel URL, so no extra config is needed after deploy.
 
+## Fix "Something went wrong" (payment not working)
+
+1. **Get your Dodo secret API key:** [dashboard.dodopayments.com](https://dashboard.dodopayments.com) → Settings → API keys. Copy the **secret** key (not the public one).
+2. **Add it in Vercel:** Your project → **Settings** → **Environment Variables** → Add **Key:** `DODO_API_KEY`, **Value:** (paste secret key) → Save.
+3. **Redeploy:** Deployments → ⋯ on latest → **Redeploy**.
+4. **Test:** Open your live site (e.g. getreach.live) → Pricing → click "Go Annual & Save" or "Start Free Trial". Checkout should open (overlay or new tab).
+
+On the Pricing page there is also a **"Payment not working? (Setup for site owners)"** expandable with these steps.
+
+---
+
 ## Steps (one-time)
 
 ### 1. Deploy the app to Vercel
