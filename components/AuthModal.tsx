@@ -33,9 +33,8 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
       }
       onSuccess(email);
       onClose();
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "An error occurred during authentication.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred during authentication.");
     } finally {
       setLoading(false);
     }
@@ -53,7 +52,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
 
         <div className="p-10">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold mb-4">
+            <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-500 px-3 py-1 rounded-full text-xs font-bold mb-4">
               <Sparkles className="w-3 h-3" />
               3-DAY FREE TRIAL
             </div>
@@ -81,7 +80,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all text-gray-900"
                 />
               </div>
             </div>
@@ -96,7 +95,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all text-gray-900"
                 />
               </div>
             </div>
@@ -110,7 +109,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 mt-6"
+              className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-orange-600 transition-all shadow-lg shadow-orange-100 flex items-center justify-center gap-2 mt-6"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Sign In' : 'Start Trial')}
             </button>
@@ -125,7 +124,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
                 setIsLogin(!isLogin);
                 setError(null);
               }}
-              className="ml-1 font-bold text-indigo-600 hover:text-indigo-700 underline"
+              className="ml-1 font-bold text-orange-600 hover:text-orange-600 underline"
             >
               {isLogin ? 'Sign Up' : 'Log In'}
             </button>

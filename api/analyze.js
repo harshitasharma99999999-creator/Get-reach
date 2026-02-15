@@ -1,10 +1,4 @@
-import { onRequest } from "firebase-functions/v2/https";
-import { defineSecret } from "firebase-functions/params";
 import { GoogleGenAI, Type } from "@google/genai";
-
-const DODO_API_KEY_SECRET = defineSecret("DODO_API_KEY");
-const GEMINI_API_KEY_SECRET = defineSecret("GEMINI_API_KEY");
-const DODO_BASE = "https://live.dodopayments.com";
 
 const FALLBACK_REPORT = {
   persona: {
@@ -130,105 +124,83 @@ const RESPONSE_SCHEMA = {
   required: ["persona", "platforms", "strategies", "advanced"],
 };
 
-function setCors(req, res) {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
+function setCors(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-export const createCheckout = onRequest(
-  { cors: true, secrets: [DODO_API_KEY_SECRET] },
-  async (req, res) => {
-    setCors(req, res);
-    if (req.method === "OPTIONS") return res.status(204).send("");
+/**
+ * Vercel serverless API: analyze product URL with Gemini + Google Search.
+ * Env: GEMINI_API_KEY (required).
+ * No Blaze plan needed; deploy to Vercel free tier.
+ */
+export default async function handler(req, res) {
+  setCors(res);
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-    const apiKey = DODO_API_KEY_SECRET.value();
-    if (!apiKey) return res.status(500).json({ error: "DODO_API_KEY not configured. Set it in Firebase Functions config." });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: "GEMINI_API_KEY not configured. Set it in Vercel project Environment Variables." });
 
-    const productId = req.method === "POST" ? (req.body?.productId || req.query?.productId) : req.query?.productId;
-    const email = req.body?.customerEmail ?? req.body?.email ?? req.query?.email ?? "";
-    if (!productId) return res.status(400).json({ error: "productId required" });
+  const body = req.body || {};
+  const { url, description, region, language, stream: useStream } = body;
+  if (!url || typeof url !== "string" || !url.trim()) return res.status(400).json({ error: "url is required" });
 
-    try {
-      const origin = req.get("Origin") || req.get("Referer")?.replace(/\/$/, "") || "";
-      const response = await fetch(`${DODO_BASE}/checkouts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          product_cart: [{ product_id: productId, quantity: 1 }],
-          ...(email ? { customer: { email: String(email).trim() } } : {}),
-          ...(origin ? { return_url: `${origin}/` } : {}),
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) return res.status(response.status).json(data);
-      if (!data.checkout_url) return res.status(502).json({ error: "No checkout_url in response" });
-      return res.status(200).json({ checkoutUrl: data.checkout_url });
-    } catch {
-      return res.status(500).json({ error: "Failed to create checkout session" });
-    }
-  }
-);
+  const input = { url: url.trim(), description: typeof description === "string" ? description : undefined, region: typeof region === "string" ? region : undefined, language: typeof language === "string" ? language : undefined };
 
-export const analyze = onRequest(
-  { cors: true, secrets: [GEMINI_API_KEY_SECRET] },
-  async (req, res) => {
-    setCors(req, res);
-    if (req.method === "OPTIONS") return res.status(204).send("");
-    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  try {
+    const ai = new GoogleGenAI({ apiKey });
 
-    const apiKey = GEMINI_API_KEY_SECRET.value();
-    if (!apiKey) return res.status(500).json({ error: "GEMINI_API_KEY not configured. Set it in Firebase Functions config." });
+    if (useStream) {
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache, no-transform");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("X-Accel-Buffering", "no");
+      res.status(200);
+      if (typeof res.flushHeaders === "function") res.flushHeaders();
 
-    const { url, description, region, language, stream: useStream } = req.body || {};
-    if (!url || typeof url !== "string" || !url.trim()) return res.status(400).json({ error: "url is required" });
-
-    const input = { url: url.trim(), description: typeof description === "string" ? description : undefined, region: typeof region === "string" ? region : undefined, language: typeof language === "string" ? language : undefined };
-
-    try {
-      const ai = new GoogleGenAI({ apiKey });
-
-      if (useStream) {
-        res.set("Content-Type", "text/event-stream");
-        res.set("Cache-Control", "no-cache, no-transform");
-        res.set("Connection", "keep-alive");
-        res.set("X-Accel-Buffering", "no");
-        if (res.flushHeaders) res.flushHeaders();
-
-        let fullText = "";
-        const stream = await ai.models.generateContentStream({
-          model: "gemini-2.5-flash",
-          contents: buildPrompt(input),
-          config: { tools: [{ googleSearch: {} }], responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA },
-        });
-        for await (const chunk of stream) {
-          const text = chunk?.text ?? "";
-          if (text) { fullText += text; res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`); }
-        }
-        if (!fullText) res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
-        else {
-          try { res.write(`data: ${JSON.stringify({ type: "done", report: JSON.parse(fullText) })}\n\n`); }
-          catch { res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`); }
-        }
-        res.end();
-        return;
-      }
-
-      const response = await ai.models.generateContent({
+      let fullText = "";
+      const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: buildPrompt(input),
         config: { tools: [{ googleSearch: {} }], responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA },
       });
-      const text = response?.text;
-      if (!text) return res.status(200).json(FALLBACK_REPORT);
-      return res.status(200).json(JSON.parse(text));
-    } catch {
-      if (useStream) {
-        res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
-        res.end();
-      } else {
-        return res.status(200).json(FALLBACK_REPORT);
+      for await (const chunk of stream) {
+        const text = chunk?.text ?? "";
+        if (text) {
+          fullText += text;
+          res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
+        }
       }
+      if (!fullText) res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
+      else {
+        try {
+          res.write(`data: ${JSON.stringify({ type: "done", report: JSON.parse(fullText) })}\n\n`);
+        } catch {
+          res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
+        }
+      }
+      res.end();
+      return;
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: buildPrompt(input),
+      config: { tools: [{ googleSearch: {} }], responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA },
+    });
+    const text = response?.text;
+    if (!text) return res.status(200).json(FALLBACK_REPORT);
+    return res.status(200).json(JSON.parse(text));
+  } catch {
+    if (useStream) {
+      res.setHeader("Content-Type", "text/event-stream");
+      res.status(200);
+      res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
+      res.end();
+    } else {
+      return res.status(200).json(FALLBACK_REPORT);
     }
   }
-);
+}

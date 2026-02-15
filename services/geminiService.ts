@@ -1,8 +1,14 @@
-
-import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisInput, ReachReport } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+/** Base URL for the analyze API. Same-origin when deployed (Vercel); localhost uses env override or same-origin with `vercel dev`. */
+function getAnalyzeUrl(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    const envUrl = import.meta.env.VITE_ANALYZE_API_URL;
+    if (envUrl && typeof envUrl === "string") return envUrl;
+    return `${window.location.origin}/api/analyze`;
+  }
+  return "/api/analyze";
+}
 
 const FALLBACK_REPORT: ReachReport = {
   persona: {
@@ -61,8 +67,8 @@ const FALLBACK_REPORT: ReachReport = {
     gaps: ["Under-served in Reddit recommendation threads", "Few comparison posts on LinkedIn", "Missing in YouTube 'tools I use' content"],
     keywordClusters: ["SaaS marketing", "customer discovery", "founder tools", "growth stack", "indie hacker tools", "PLG"],
     whatToSayExamples: [
-      { platform: "Reddit", example: "I built [product] after spending months on [specific pain]. Here’s what changed for us — happy to answer questions.", whyItWorks: "Relatable problem-solution; invites conversation." },
-      { platform: "LinkedIn", example: "We cut [metric] by X% using [approach]. Key lesson: [insight]. What’s working for you?", whyItWorks: "Data + open question drives comments." },
+      { platform: "Reddit", example: "I built [product] after spending months on [specific pain]. Here's what changed for us — happy to answer questions.", whyItWorks: "Relatable problem-solution; invites conversation." },
+      { platform: "LinkedIn", example: "We cut [metric] by X% using [approach]. Key lesson: [insight]. What's working for you?", whyItWorks: "Data + open question drives comments." },
       { platform: "X (Twitter)", example: "Ship: We just launched [feature] for [audience]. Try it: [link]. Feedback welcome.", whyItWorks: "Short, clear CTA; build-in-public vibe." }
     ],
     whoIsLookingForSolution: {
@@ -74,145 +80,86 @@ const FALLBACK_REPORT: ReachReport = {
   }
 };
 
-export const generateReachReport = async (input: AnalysisInput): Promise<ReachReport> => {
-  const prompt = `
-You are a senior growth and customer-discovery analyst. Produce a PROFESSIONAL, HIGHLY DETAILED report that founders can use to find and reach their exact customers. This must NOT be generic; it must be specific to the product at the given URL.
+export interface FetchReportOptions {
+  /** Use SSE streaming; report is returned when stream completes. */
+  stream?: boolean;
+  /** Called when a text chunk arrives (for progress UI). */
+  onChunk?: (text: string) => void;
+}
 
-PRODUCT TO ANALYZE:
-- URL: ${input.url}
-- Optional description: ${input.description || 'Not provided'}
-- Target region: ${input.region || 'Global'}
-- Language: ${input.language || 'English'}
-
-INSTRUCTIONS:
-1. Infer or research what the product does (use the URL and description). Identify the EXACT ideal customer: job titles, industry, technical level, and 3-5 specific pain points they have that this product solves.
-2. List 6-12 REAL platforms where these customers actually spend time. For each platform provide:
-   - Full, real community names: subreddits (e.g. r/startups, r/SaaS), LinkedIn group names, X/Twitter hashtags and accounts, Discord server names, forums (e.g. Indie Hackers, Hacker News, specific Slack/Discord communities), YouTube channels or video topics, niche forums and communities. Use ONLY real, discoverable names that exist.
-   - A detailed "importance" sentence: why THIS audience is there, what they discuss, and how it fits this product (2-3 sentences).
-   - bestPostTypes: 2-4 concrete content types that work on this platform (e.g. "AMA posts", "How I built X", "Case studies").
-   - frequency: recommended posting cadence (e.g. "2-3x per week", "Daily threads").
-   - visibility, engagement, conversionIntent: set appropriately (High/Medium/Low) based on how relevant and convertible the audience is.
-3. In "advanced":
-   - competitorPresence: 1-2 sentences on where competitors show up and where there is white space.
-   - gaps: 3-5 specific opportunities (e.g. "r/entrepreneur has no sticky threads about [topic]", "LinkedIn lacks comparison content").
-   - keywordClusters: 5-10 real search phrases and hashtags this audience uses (specific, not generic).
-   - whatToSayExamples: 3-6 examples across different platforms. Each must be a concrete, copy-paste style message (post or DM) and a short "whyItWorks" tied to that platform's norms.
-   - whoIsLookingForSolution: REQUIRED. Identify who across the internet is ACTIVELY SEARCHING FOR or ASKING FOR the solution this product provides. Include: (a) summary: 2-3 sentences describing these people and their intent; (b) searchPhrases: 5-10 real search queries, forum questions, or phrases they use (e.g. "best tool for X", "how do I find Y"); (c) whereTheyAsk: 3-5 specific places/channels where these questions appear (subreddits, forums, LinkedIn, X hashtags); (d) jobTitlesOrRoles: 3-6 job titles or roles of people who ask for this solution. Be specific to the product; only people who are looking for THIS solution.
-
-OUTPUT: Return valid JSON only. Be specific and actionable. If you cannot fetch the URL, use the domain and description to infer the product and still produce a detailed, professional report. NEVER return an error or non-JSON.
-  `;
+/**
+ * Fetch a Reach report from the backend API.
+ * The API runs Gemini with Google Search grounding to find who is looking for the solution across the internet.
+ * Set options.stream = true for SSE streaming; the report is returned when the stream completes.
+ */
+export const fetchReportFromAPI = async (
+  input: AnalysisInput,
+  options?: FetchReportOptions
+): Promise<ReachReport> => {
+  const useStream = options?.stream === true;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview", 
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }], 
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            persona: {
-              type: Type.OBJECT,
-              properties: {
-                title: { type: Type.STRING },
-                description: { type: Type.STRING },
-                jobRoles: { type: Type.ARRAY, items: { type: Type.STRING } },
-                userType: { type: Type.STRING },
-                technicalLevel: { type: Type.STRING },
-                industry: { type: Type.STRING },
-                painPoints: { type: Type.ARRAY, items: { type: Type.STRING } },
-              },
-              required: ["title", "description", "jobRoles", "userType", "technicalLevel", "industry", "painPoints"]
-            },
-            platforms: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  communities: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  importance: { type: Type.STRING },
-                  bestPostTypes: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  frequency: { type: Type.STRING },
-                  visibility: { type: Type.STRING },
-                  engagement: { type: Type.STRING },
-                  conversionIntent: { type: Type.STRING },
-                },
-                required: ["name", "communities", "importance", "bestPostTypes", "frequency", "visibility", "engagement", "conversionIntent"]
-              }
-            },
-            strategies: {
-              type: Type.OBJECT,
-              properties: {
-                organic: {
-                  type: Type.OBJECT,
-                  properties: {
-                    type: { type: Type.STRING },
-                    platforms: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    tone: { type: Type.STRING },
-                    guidelines: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    commonMistakes: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    isWorthIt: { type: Type.BOOLEAN },
-                  },
-                  required: ["type", "platforms", "tone", "guidelines", "commonMistakes", "isWorthIt"]
-                },
-                paid: {
-                  type: Type.OBJECT,
-                  properties: {
-                    type: { type: Type.STRING },
-                    platforms: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    tone: { type: Type.STRING },
-                    guidelines: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    commonMistakes: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    isWorthIt: { type: Type.BOOLEAN },
-                  },
-                  required: ["type", "platforms", "tone", "guidelines", "commonMistakes", "isWorthIt"]
-                }
-              },
-              required: ["organic", "paid"]
-            },
-            advanced: {
-              type: Type.OBJECT,
-              properties: {
-                competitorPresence: { type: Type.STRING },
-                gaps: { type: Type.ARRAY, items: { type: Type.STRING } },
-                keywordClusters: { type: Type.ARRAY, items: { type: Type.STRING } },
-                whatToSayExamples: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      platform: { type: Type.STRING },
-                      example: { type: Type.STRING },
-                      whyItWorks: { type: Type.STRING },
-                    },
-                    required: ["platform", "example", "whyItWorks"]
-                  }
-                },
-                whoIsLookingForSolution: {
-                  type: Type.OBJECT,
-                  properties: {
-                    summary: { type: Type.STRING },
-                    searchPhrases: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    whereTheyAsk: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    jobTitlesOrRoles: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  },
-                  required: ["summary", "searchPhrases", "whereTheyAsk", "jobTitlesOrRoles"]
-                }
-              },
-              required: ["competitorPresence", "gaps", "keywordClusters", "whatToSayExamples", "whoIsLookingForSolution"]
-            }
-          },
-          required: ["persona", "platforms", "strategies", "advanced"]
-        }
-      }
+    const res = await fetch(getAnalyzeUrl(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: input.url,
+        description: input.description,
+        region: input.region,
+        language: input.language,
+        stream: useStream,
+      }),
     });
 
-    if (!response.text) return FALLBACK_REPORT;
-    return JSON.parse(response.text) as ReachReport;
-  } catch (error) {
-    console.warn("Analysis failed, using high-quality fallback data.");
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err?.error || `API error ${res.status}`);
+    }
+
+    if (useStream && res.body) {
+      return await consumeSSEStream(res, options?.onChunk);
+    }
+
+    const report = await res.json();
+    return report as ReachReport;
+  } catch {
     return FALLBACK_REPORT;
   }
 };
+
+/** Parse SSE stream from the analyze API and return the final report. */
+async function consumeSSEStream(
+  res: Response,
+  onChunk?: (text: string) => void
+): Promise<ReachReport> {
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      if (line.startsWith("data: ")) {
+        try {
+          const payload = JSON.parse(line.slice(6));
+          if (payload.type === "chunk" && payload.text) {
+            onChunk?.(payload.text);
+          } else if (payload.type === "done" && payload.report) {
+            return payload.report as ReachReport;
+          }
+        } catch {
+          // ignore parse errors for malformed chunks
+        }
+      }
+    }
+  }
+
+  // fallback if stream ended without done event
+  return FALLBACK_REPORT;
+}

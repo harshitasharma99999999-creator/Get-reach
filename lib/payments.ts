@@ -70,8 +70,6 @@ export const triggerCheckout = async (productId: string, userEmail?: string): Pr
     try {
       data = await res.json();
     } catch {
-      const text = await res.text().catch(() => '');
-      console.error('Checkout response not JSON', res.status, text.slice(0, 200));
       alert('Server error. Please check your connection and try again.');
       return;
     }
@@ -79,7 +77,7 @@ export const triggerCheckout = async (productId: string, userEmail?: string): Pr
       const msg = data?.error || 'Could not start checkout.';
       const isSetup = msg.includes('DODO_API_KEY') || res.status === 500;
       const setupSteps = isSetup
-        ? '\n\nTo enable payments:\n1. Get your Dodo secret API key from dashboard.dodopayments.com (Settings → API keys).\n2. In Vercel: your project → Settings → Environment Variables.\n3. Add DODO_API_KEY with that key, Save, then Redeploy.'
+        ? '\n\nTo enable payments:\n1. Get your Dodo secret API key from dashboard.dodopayments.com (Settings → API keys).\n2. In Vercel: Project Settings → Environment Variables → add DODO_API_KEY.\n3. Redeploy your Vercel project.'
         : '';
       alert(msg + setupSteps);
       return;
@@ -115,25 +113,23 @@ export const triggerCheckout = async (productId: string, userEmail?: string): Pr
             // Optional: track or refresh
           }
           if (e?.event_type === 'checkout.error') {
-            console.error('Checkout error', e?.data?.message);
+            // Error handled by overlay
           }
         }
       });
 
       Dodo.Checkout.open({ checkoutUrl });
-    } catch (overlayError) {
-      console.error('Checkout overlay error', overlayError);
+    } catch {
       openCheckoutFallback('Could not open payment overlay.');
     }
-  } catch (e) {
-    console.error('Checkout error', e);
+  } catch {
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank', 'noopener');
       alert('Opening checkout in a new tab — complete your purchase there.');
     } else {
       alert(
         'Something went wrong. Check your connection and try again.\n\n' +
-        'If you run this site: add DODO_API_KEY in Vercel (Settings → Environment Variables), then Redeploy.'
+        'If you run this site: add DODO_API_KEY in Vercel Environment Variables, then redeploy.'
       );
     }
   }

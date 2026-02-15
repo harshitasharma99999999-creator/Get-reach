@@ -135,10 +135,10 @@ const Dashboard: React.FC<Props> = ({ report }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 pb-48 space-y-28 md:space-y-32">
+    <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 pb-48 space-y-28 md:space-y-32 bg-slate-950">
       {/* Real data badge */}
       <div className="flex flex-wrap items-center justify-center gap-3 py-6">
-        <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-50/90 border-2 border-emerald-200 text-emerald-800 text-sm font-bold shadow-sm">
+        <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-bold">
           <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
           Based on real communities & live platform data — not a simulation
         </span>
@@ -146,47 +146,47 @@ const Dashboard: React.FC<Props> = ({ report }) => {
 
       {/* Who's looking for your solution */}
       {report.advanced.whoIsLookingForSolution && (
-        <section className="relative overflow-hidden rounded-[3rem] md:rounded-[4rem] border-2 border-blue-100/90 bg-gradient-to-br from-white via-blue-50/20 to-sky-50/30 p-8 md:p-14 shadow-2xl shadow-blue-50/60">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-200/15 blur-[100px] rounded-full -z-0" />
+        <section className="relative overflow-hidden rounded-3xl border border-slate-700 bg-slate-900/60 p-8 md:p-14">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full -z-0" />
           <div className="relative z-10">
             <div className="flex items-center gap-5 mb-8">
-              <div className="bg-blue-600 p-3.5 rounded-2xl shadow-lg shadow-blue-300/40">
+              <div className="bg-orange-500 p-3.5 rounded-2xl">
                 <Search className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter">Who&apos;s looking for your solution</h2>
-                <p className="text-gray-500 font-bold mt-1.5 text-lg">People across the internet actively asking for what your product provides.</p>
+                <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter">Who&apos;s looking for your solution</h2>
+                <p className="text-slate-400 font-bold mt-1.5 text-lg">People across the internet actively asking for what your product provides.</p>
               </div>
             </div>
-            <p className="text-gray-700 font-medium text-lg leading-relaxed mb-8 max-w-3xl">{report.advanced.whoIsLookingForSolution.summary}</p>
+            <p className="text-slate-300 font-medium text-lg leading-relaxed mb-8 max-w-3xl">{report.advanced.whoIsLookingForSolution.summary}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="space-y-3">
-                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Search phrases & questions they use</p>
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Search phrases & questions they use</p>
                 <ul className="space-y-2">
                   {report.advanced.whoIsLookingForSolution.searchPhrases.map((phrase, i) => (
-                    <li key={i} className="flex items-start gap-2 text-gray-700 font-medium">
-                      <span className="text-blue-400 mt-1">&quot;</span>
+                    <li key={i} className="flex items-start gap-2 text-slate-300 font-medium">
+                      <span className="text-orange-400 mt-1">&quot;</span>
                       <span>{phrase}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="space-y-3">
-                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Where they ask</p>
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Where they ask</p>
                 <ul className="space-y-2">
                   {report.advanced.whoIsLookingForSolution.whereTheyAsk.map((place, i) => (
-                    <li key={i} className="text-gray-700 font-medium flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0" />
+                    <li key={i} className="text-slate-300 font-medium flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-orange-500 rounded-full flex-shrink-0" />
                       {place}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="space-y-3">
-                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Job titles & roles</p>
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Job titles & roles</p>
                 <div className="flex flex-wrap gap-2">
                   {report.advanced.whoIsLookingForSolution.jobTitlesOrRoles.map((role, i) => (
-                    <span key={i} className="px-4 py-2 bg-blue-50 text-blue-800 rounded-xl text-sm font-bold border border-blue-100">
+                    <span key={i} className="px-4 py-2 bg-orange-500/10 text-orange-400 rounded-xl text-sm font-bold border border-orange-500/30">
                       {role}
                     </span>
                   ))}

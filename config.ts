@@ -19,25 +19,13 @@ export const DODO_CONFIG = {
   publicKey: "bus_0NXtr3I0VPy5EZLZ347T9",
   productIdMonthly: "pdt_0NXzOvcubuh5CW0JIWQew",
   productIdYearly: "pdt_0NXzP1ahdtlPPOXGWzHyH",
-  /**
-   * Checkout API URL. No Firebase Blaze needed if you use Vercel:
-   * - Deploy this app to Vercel and add api/createCheckout.js (included). Set DODO_API_KEY in Vercel env.
-   * - Same-origin: when the app runs on Vercel, we use /api/createCheckout on the same domain.
-   * - Or set VITE_CREATE_CHECKOUT_URL to any URL that hosts the checkout API.
-   */
+  /** Checkout API URL. Same-origin when deployed (Vercel); localhost uses env override or same-origin with `vercel dev`. */
   getCreateCheckoutUrl: (): string => {
-    if (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_CREATE_CHECKOUT_URL) {
-      return (import.meta as any).env.VITE_CREATE_CHECKOUT_URL;
-    }
     if (typeof window !== "undefined" && window.location?.origin) {
+      const envUrl = import.meta.env.VITE_CREATE_CHECKOUT_URL;
+      if (envUrl && typeof envUrl === "string") return envUrl;
       return `${window.location.origin}/api/createCheckout`;
     }
-    return "https://us-central1-get-reach-21bae.cloudfunctions.net/createCheckout";
+    return "/api/createCheckout";
   }
-};
-
-/** Set to your Google AdSense client ID (e.g. ca-pub-xxxxxxxx) to enable ads. */
-export const ADS_CONFIG = {
-  clientId: "",
-  slotReport: ""
 };
