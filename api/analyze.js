@@ -131,17 +131,52 @@ function setCors(res) {
 }
 
 /**
+ * Create the GoogleGenAI client.
+ *
+ * Supports two modes:
+ * 1. Direct Gemini: set GEMINI_API_KEY
+ * 2. Custom proxy (e.g. free-backed.web.app): set BACKEND_API_KEY and BACKEND_BASE_URL
+ *
+ * The proxy must be Gemini-API-compatible (same request/response format).
+ */
+function createAIClient() {
+  const backendKey = process.env.BACKEND_API_KEY;
+  const backendUrl = process.env.BACKEND_BASE_URL;
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  if (backendKey && backendUrl) {
+    return new GoogleGenAI({ apiKey: backendKey, httpOptions: { baseUrl: backendUrl } });
+  }
+  if (backendKey) {
+    return new GoogleGenAI({ apiKey: backendKey });
+  }
+  if (geminiKey) {
+    return new GoogleGenAI({ apiKey: geminiKey });
+  }
+  return null;
+}
+
+/**
  * Vercel serverless API: analyze product URL with Gemini + Google Search.
- * Env: GEMINI_API_KEY (required).
- * No Blaze plan needed; deploy to Vercel free tier.
+ *
+ * Env vars (set ONE pair):
+ *   Option A — Your own backend proxy:
+ *     BACKEND_API_KEY  = your free-backed API key (e.g. vck_...)
+ *     BACKEND_BASE_URL = your backend URL (e.g. https://free-backed.web.app)
+ *   Option B — Direct Gemini:
+ *     GEMINI_API_KEY   = Google AI Studio key (AIzaSy...)
  */
 export default async function handler(req, res) {
   setCors(res);
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "GEMINI_API_KEY not configured. Set it in Vercel project Environment Variables." });
+  const ai = createAIClient();
+  if (!ai) {
+    return res.status(500).json({
+      error: "No API key configured. Set BACKEND_API_KEY + BACKEND_BASE_URL (for your own backend) or GEMINI_API_KEY (for direct Gemini) in Vercel Environment Variables."
+    });
+  }
 
   const body = req.body || {};
   const { url, description, region, language, stream: useStream } = body;
@@ -150,8 +185,6 @@ export default async function handler(req, res) {
   const input = { url: url.trim(), description: typeof description === "string" ? description : undefined, region: typeof region === "string" ? region : undefined, language: typeof language === "string" ? language : undefined };
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
-
     if (useStream) {
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache, no-transform");
@@ -193,10 +226,12 @@ export default async function handler(req, res) {
     const text = response?.text;
     if (!text) return res.status(200).json(FALLBACK_REPORT);
     return res.status(200).json(JSON.parse(text));
-  } catch {
+  } catch (err) {
+    const errMsg = err?.message || String(err);
     if (useStream) {
       res.setHeader("Content-Type", "text/event-stream");
       res.status(200);
+      res.write(`data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`);
       res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
       res.end();
     } else {
