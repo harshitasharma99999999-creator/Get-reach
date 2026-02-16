@@ -1,31 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const FALLBACK_REPORT = {
-  persona: {
-    title: "SaaS and Product Decision Maker",
-    description: "Forward-thinking founder or operator looking for tools to scale, automate, and reach the right customers.",
-    jobRoles: ["SaaS Founder", "Product Manager", "Tech Lead", "Growth Lead"],
-    userType: "Founder",
-    technicalLevel: "Semi-Technical",
-    industry: "Software & Technology",
-    painPoints: ["High customer acquisition cost", "Unclear where ideal users spend time", "Generic marketing that doesn't convert"],
-  },
-  platforms: [
-    { name: "Reddit", communities: ["r/startups", "r/SaaS", "r/indiehackers"], importance: "Founders ask for tool recommendations.", bestPostTypes: ["AMA style", "How I solved X"], frequency: "2-3x per week", visibility: "High", engagement: "High", conversionIntent: "High" },
-    { name: "X (Twitter)", communities: ["#buildinpublic", "#indiehackers"], importance: "Real-time founder community.", bestPostTypes: ["Threads", "Ship updates"], frequency: "Daily", visibility: "High", engagement: "High", conversionIntent: "High" },
-  ],
-  advanced: {
-    competitorPresence: "Moderate in Reddit and LinkedIn.",
-    gaps: ["Under-served in Reddit recommendation threads"],
-    keywordClusters: ["SaaS marketing", "customer discovery", "founder tools"],
-    whatToSayExamples: [{ platform: "Reddit", example: "I built [product] after spending months on [specific pain].", whyItWorks: "Relatable problem-solution." }],
-    whoIsLookingForSolution: { summary: "SaaS founders looking for customer discovery tools.", searchPhrases: ["Where do my ideal customers hang out?"], whereTheyAsk: ["r/startups", "r/SaaS"], jobTitlesOrRoles: ["SaaS Founder", "Product Manager"] },
-  },
-};
-
 function buildPrompt(input) {
   return `
-You are a senior growth and customer-discovery analyst. Produce a PROFESSIONAL, HIGHLY DETAILED report that founders can use to find and reach their exact customers. This must NOT be generic; it must be specific to the product at the given URL.
+You are a senior growth and customer-discovery analyst with access to Google Search. You MUST use Google Search to research the product and find REAL data. Do NOT rely on your training data alone.
+
+CRITICAL RULES:
+- You MUST search the internet for this product URL and understand what it does.
+- You MUST search for REAL communities, subreddits, forums, and groups where this product's target audience actually exists RIGHT NOW.
+- You MUST search for REAL people and conversations where someone is asking for a solution like this product.
+- Every community name, subreddit, group, hashtag, and forum you mention MUST be a real, existing, currently active community that you found via search.
+- Do NOT invent or hallucinate community names. If you cannot verify a community exists, do NOT include it.
+- Do NOT provide generic or templated responses. Every piece of data must be specific to THIS product.
 
 PRODUCT TO ANALYZE:
 - URL: ${input.url}
@@ -33,22 +18,28 @@ PRODUCT TO ANALYZE:
 - Target region: ${input.region || "Global"}
 - Language: ${input.language || "English"}
 
-INSTRUCTIONS:
-1. Infer or research what the product does (use the URL and description). Identify the EXACT ideal customer: job titles, industry, technical level, and 3-5 specific pain points they have that this product solves.
-2. List 6-12 REAL platforms where these customers actually spend time. For each platform provide:
-   - Full, real community names: subreddits (e.g. r/startups, r/SaaS), LinkedIn group names, X/Twitter hashtags and accounts, Discord server names, forums (e.g. Indie Hackers, Hacker News). Use ONLY real, discoverable names that exist.
-   - A detailed "importance" sentence: why THIS audience is there, what they discuss, and how it fits this product (2-3 sentences).
-   - bestPostTypes: 2-4 concrete content types that work on this platform.
-   - frequency: recommended posting cadence.
-   - visibility, engagement, conversionIntent: set appropriately (High/Medium/Low).
-3. In "advanced":
-   - competitorPresence: 1-2 sentences on where competitors show up.
-   - gaps: 3-5 specific opportunities.
-   - keywordClusters: 5-10 real search phrases and hashtags.
-   - whatToSayExamples: 3-6 examples across different platforms.
-   - whoIsLookingForSolution: REQUIRED. Identify who is ACTIVELY SEARCHING FOR the solution. Include: summary, searchPhrases, whereTheyAsk, jobTitlesOrRoles.
+RESEARCH STEPS (use Google Search for each):
+1. Visit/research the product URL to understand what it does, who it's for, and what problem it solves.
+2. Search for the product's target audience: where do they hang out online? Search for relevant subreddits, LinkedIn groups, X/Twitter communities, Discord servers, forums, Slack groups.
+3. Search for people actively asking for solutions like this product. Find real search phrases, real forum threads, real questions.
+4. Search for competitors and where they have presence.
 
-OUTPUT: Return valid JSON only. Be specific and actionable. NEVER return an error or non-JSON.
+REPORT STRUCTURE:
+1. PERSONA: Identify the EXACT ideal customer based on your research. Include job titles, industry, technical level, and 3-5 specific pain points.
+2. PLATFORMS (6-12): For each platform provide:
+   - Real, verified community names (subreddits like r/startups, LinkedIn groups, X hashtags, Discord servers, forums)
+   - Why THIS audience is specifically there (2-3 sentences based on your research)
+   - bestPostTypes: 2-4 content types that work on this platform
+   - frequency: recommended posting cadence
+   - visibility, engagement, conversionIntent: High/Medium/Low
+3. ADVANCED:
+   - competitorPresence: Where competitors actually show up (based on search)
+   - gaps: 3-5 real opportunities you found
+   - keywordClusters: 5-10 real search terms people use
+   - whatToSayExamples: 3-6 platform-specific examples
+   - whoIsLookingForSolution: WHO is actively searching. Include real search phrases, real places they ask, real job titles.
+
+OUTPUT: Return valid JSON only. Every data point must come from your web research. NEVER return generic data.
 `;
 }
 
@@ -85,14 +76,6 @@ const RESPONSE_SCHEMA = {
         required: ["name", "communities", "importance", "bestPostTypes", "frequency", "visibility", "engagement", "conversionIntent"],
       },
     },
-    strategies: {
-      type: Type.OBJECT,
-      properties: {
-        organic: { type: Type.OBJECT, properties: {}, required: [] },
-        paid: { type: Type.OBJECT, properties: {}, required: [] },
-      },
-      required: ["organic", "paid"],
-    },
     advanced: {
       type: Type.OBJECT,
       properties: {
@@ -121,7 +104,7 @@ const RESPONSE_SCHEMA = {
       required: ["competitorPresence", "gaps", "keywordClusters", "whatToSayExamples", "whoIsLookingForSolution"],
     },
   },
-  required: ["persona", "platforms", "strategies", "advanced"],
+  required: ["persona", "platforms", "advanced"],
 };
 
 function setCors(res) {
@@ -132,39 +115,20 @@ function setCors(res) {
 
 /**
  * Create the GoogleGenAI client.
- *
- * Supports two modes:
- * 1. Direct Gemini: set GEMINI_API_KEY
- * 2. Custom proxy (e.g. free-backed.web.app): set BACKEND_API_KEY and BACKEND_BASE_URL
- *
- * The proxy must be Gemini-API-compatible (same request/response format).
+ * Reads GEMINI_API_KEY from env. This key is free from Google AI Studio.
  */
 function createAIClient() {
-  const backendKey = process.env.BACKEND_API_KEY;
-  const backendUrl = process.env.BACKEND_BASE_URL;
-  const geminiKey = process.env.GEMINI_API_KEY;
-
-  if (backendKey && backendUrl) {
-    return new GoogleGenAI({ apiKey: backendKey, httpOptions: { baseUrl: backendUrl } });
-  }
-  if (backendKey) {
-    return new GoogleGenAI({ apiKey: backendKey });
-  }
-  if (geminiKey) {
-    return new GoogleGenAI({ apiKey: geminiKey });
-  }
-  return null;
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+  return new GoogleGenAI({ apiKey });
 }
 
 /**
  * Vercel serverless API: analyze product URL with Gemini + Google Search.
+ * Gemini uses live Google Search to find real communities and real people.
+ * No simulation — every data point comes from web research.
  *
- * Env vars (set ONE pair):
- *   Option A — Your own backend proxy:
- *     BACKEND_API_KEY  = your free-backed API key (e.g. vck_...)
- *     BACKEND_BASE_URL = your backend URL (e.g. https://free-backed.web.app)
- *   Option B — Direct Gemini:
- *     GEMINI_API_KEY   = Google AI Studio key (AIzaSy...)
+ * Env: GEMINI_API_KEY (free from https://aistudio.google.com/apikey)
  */
 export default async function handler(req, res) {
   setCors(res);
@@ -174,7 +138,7 @@ export default async function handler(req, res) {
   const ai = createAIClient();
   if (!ai) {
     return res.status(500).json({
-      error: "No API key configured. Set BACKEND_API_KEY + BACKEND_BASE_URL (for your own backend) or GEMINI_API_KEY (for direct Gemini) in Vercel Environment Variables."
+      error: "GEMINI_API_KEY not configured. Get a free key from https://aistudio.google.com/apikey and add it in Vercel Environment Variables."
     });
   }
 
@@ -182,7 +146,12 @@ export default async function handler(req, res) {
   const { url, description, region, language, stream: useStream } = body;
   if (!url || typeof url !== "string" || !url.trim()) return res.status(400).json({ error: "url is required" });
 
-  const input = { url: url.trim(), description: typeof description === "string" ? description : undefined, region: typeof region === "string" ? region : undefined, language: typeof language === "string" ? language : undefined };
+  const input = {
+    url: url.trim(),
+    description: typeof description === "string" ? description : undefined,
+    region: typeof region === "string" ? region : undefined,
+    language: typeof language === "string" ? language : undefined,
+  };
 
   try {
     if (useStream) {
@@ -197,7 +166,11 @@ export default async function handler(req, res) {
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: buildPrompt(input),
-        config: { tools: [{ googleSearch: {} }], responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA },
+        config: {
+          tools: [{ googleSearch: {} }],
+          responseMimeType: "application/json",
+          responseSchema: RESPONSE_SCHEMA,
+        },
       });
       for await (const chunk of stream) {
         const text = chunk?.text ?? "";
@@ -206,36 +179,43 @@ export default async function handler(req, res) {
           res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
         }
       }
-      if (!fullText) res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
-      else {
-        try {
-          res.write(`data: ${JSON.stringify({ type: "done", report: JSON.parse(fullText) })}\n\n`);
-        } catch {
-          res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
-        }
+
+      if (!fullText) {
+        res.write(`data: ${JSON.stringify({ type: "error", message: "Gemini returned empty response. Please try again." })}\n\n`);
+        res.end();
+        return;
+      }
+
+      try {
+        const report = JSON.parse(fullText);
+        res.write(`data: ${JSON.stringify({ type: "done", report })}\n\n`);
+      } catch {
+        res.write(`data: ${JSON.stringify({ type: "error", message: "Failed to parse report. Please try again." })}\n\n`);
       }
       res.end();
       return;
     }
 
+    // Non-streaming
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: buildPrompt(input),
-      config: { tools: [{ googleSearch: {} }], responseMimeType: "application/json", responseSchema: RESPONSE_SCHEMA },
+      config: {
+        tools: [{ googleSearch: {} }],
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+      },
     });
     const text = response?.text;
-    if (!text) return res.status(200).json(FALLBACK_REPORT);
+    if (!text) return res.status(502).json({ error: "Gemini returned empty response. Please try again." });
     return res.status(200).json(JSON.parse(text));
   } catch (err) {
     const errMsg = err?.message || String(err);
     if (useStream) {
-      res.setHeader("Content-Type", "text/event-stream");
-      res.status(200);
       res.write(`data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`);
-      res.write(`data: ${JSON.stringify({ type: "done", report: FALLBACK_REPORT })}\n\n`);
       res.end();
     } else {
-      return res.status(200).json(FALLBACK_REPORT);
+      return res.status(502).json({ error: errMsg });
     }
   }
 }

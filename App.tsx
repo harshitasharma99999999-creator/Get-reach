@@ -19,6 +19,7 @@ const App: React.FC = () => {
   const [report, setReport] = useState<ReachReport | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
   const [inputUrl, setInputUrl] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<'home' | 'pricing'>('home');
   const [showAuth, setShowAuth] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -72,6 +73,7 @@ const App: React.FC = () => {
     }
     setInputUrl(data.url);
     setIsLoading(true);
+    setError(null);
     try {
       const result = await fetchReportFromAPI(data, {
         stream: true,
@@ -84,6 +86,8 @@ const App: React.FC = () => {
         const id = await saveReport(user.uid, result);
         setReportId(id);
       } catch (_) {}
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -128,8 +132,20 @@ const App: React.FC = () => {
                 <GetReachLogo className="w-12 h-12" />
               </div>
             </div>
-            <h2 className="text-2xl font-black text-white mb-2">Building your report</h2>
-            <p className="text-slate-400">Analyzing your URL and mapping exact platforms for your product.</p>
+            <h2 className="text-2xl font-black text-white mb-2">Searching the internet for your product</h2>
+            <p className="text-slate-400">Researching real communities, subreddits, and people looking for your solution. This may take 15-30 seconds.</p>
+          </div>
+        )}
+
+        {error && !isLoading && !report && activeSection === 'home' && (
+          <div className="max-w-2xl mx-auto px-4 py-32 flex flex-col items-center justify-center text-center">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-3xl p-10 w-full">
+              <h2 className="text-2xl font-black text-red-400 mb-3">Analysis failed</h2>
+              <p className="text-slate-300 font-medium mb-6">{error}</p>
+              <button onClick={handleReset} className="bg-orange-500 text-white px-8 py-3.5 rounded-2xl font-black hover:bg-orange-600 transition-all active:scale-95">
+                Try again
+              </button>
+            </div>
           </div>
         )}
 
