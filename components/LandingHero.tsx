@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Quote } from 'lucide-react';
 import AnalysisForm from './AnalysisForm';
 import type { AnalysisInput } from '../types';
@@ -10,7 +10,9 @@ interface Props {
   onAuthNeeded: () => void;
 }
 
-const LandingHero: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAuthNeeded }) => (
+const LandingHero: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAuthNeeded }) => {
+  const [avatarError, setAvatarError] = useState(false);
+  return (
   <>
     <section className="relative min-h-[90vh] flex flex-col justify-center px-4 py-20 overflow-hidden">
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-orange-500/20 blur-[120px] rounded-full -z-0 pointer-events-none" />
@@ -57,19 +59,36 @@ const LandingHero: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAuth
           <p className="text-xl md:text-2xl font-medium text-slate-200 leading-relaxed mb-8">
             &ldquo;This is so useful and has a potential!! I&apos;ve just been thinking about which subreddit fits me and this solved that! Amazing, and keep posting plz!&rdquo;
           </p>
-          <footer className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-            <div className="w-12 h-12 rounded-full bg-orange-500/20 border-2 border-orange-500/40 flex items-center justify-center text-orange-400 font-black text-lg">
-              Y
+          <footer className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-orange-500/20 border-2 border-orange-500/40 flex-shrink-0 flex items-center justify-center ring-2 ring-slate-800">
+              {!avatarError ? (
+                <img
+                  src="https://unavatar.io/twitter/yusukelp"
+                  alt="Yusuke"
+                  className="w-full h-full object-cover"
+                  onError={() => setAvatarError(true)}
+                />
+              ) : (
+                <span className="text-orange-400 font-black text-xl sm:text-lg" aria-hidden="true">Y</span>
+              )}
             </div>
-            <div className="text-left sm:text-center">
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <cite className="not-italic font-bold text-white">Yusuke</cite>
-              <span className="text-slate-400 font-medium text-sm block sm:inline sm:ml-2">@yusukelp</span>
+              <a
+                href="https://x.com/yusukelp"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-400 font-medium text-sm hover:text-orange-300 underline focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+              >
+                @yusukelp
+              </a>
             </div>
           </footer>
         </blockquote>
       </div>
     </section>
   </>
-);
+  );
+};
 
 export default LandingHero;
