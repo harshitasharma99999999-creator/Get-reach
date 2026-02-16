@@ -11,7 +11,7 @@ import { fetchReportFromAPI } from './services/geminiService';
 import { ReachReport, AnalysisInput } from './types';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { saveReport, getLatestReport, subscribeToReport } from './lib/reports';
+import { saveReport, getLatestReport, subscribeToReport, getReportCount } from './lib/reports';
 import { ArrowLeft } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -71,6 +71,13 @@ const App: React.FC = () => {
       setShowAuth(true);
       return;
     }
+    const count = await getReportCount(user.uid);
+    if (count >= 1) {
+      setError("You've used your one-time free trial. Subscribe to run more analyses.");
+      setActiveSection('pricing');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setInputUrl(data.url);
     setIsLoading(true);
     setError(null);
@@ -97,6 +104,7 @@ const App: React.FC = () => {
     setReport(null);
     setReportId(null);
     setInputUrl('');
+    setError(null);
     setActiveSection('home');
   };
 

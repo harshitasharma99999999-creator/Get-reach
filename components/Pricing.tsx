@@ -14,7 +14,7 @@ const Pricing: React.FC<Props> = ({ userEmail }) => (
         <Star className="w-4 h-4 fill-current" /> Affordable for founders
       </div>
       <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">Simple, growth-focused pricing</h2>
-      <p className="text-lg md:text-xl text-slate-400 font-semibold max-w-2xl mx-auto">Get detailed customer discovery reports for your URL. Start with a 3-day free trial.</p>
+      <p className="text-lg md:text-xl text-slate-400 font-semibold max-w-2xl mx-auto">Get detailed customer discovery reports. One free analysis per account; then subscribe.</p>
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -26,7 +26,7 @@ const Pricing: React.FC<Props> = ({ userEmail }) => (
             <span className="text-slate-400 font-bold text-lg">/month</span>
           </div>
           <p className="text-sm text-orange-400 font-black mt-4 flex items-center gap-2 bg-orange-500/10 w-fit px-3 py-1 rounded-full border border-orange-500/30">
-            <Sparkles className="w-4 h-4" /> 3-Day Free Trial
+            <Sparkles className="w-4 h-4" /> One-time trial then subscribe
           </p>
         </div>
         <ul className="space-y-6 mb-12 flex-grow">
@@ -43,7 +43,7 @@ const Pricing: React.FC<Props> = ({ userEmail }) => (
           onClick={() => triggerCheckout(DODO_CONFIG.productIdMonthly, userEmail)}
           className="w-full py-5 px-8 rounded-2xl bg-slate-800 text-white font-black text-lg hover:bg-orange-500 transition-all border border-slate-600 hover:border-orange-500 active:scale-95"
         >
-          Start Free Trial
+          Subscribe monthly
         </button>
       </div>
 

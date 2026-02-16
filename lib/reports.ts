@@ -58,6 +58,18 @@ export async function getLatestReport(userId: string): Promise<SavedReport | nul
 }
 
 /**
+ * Number of reports this user has (used for one-time free trial: first report free, then paid).
+ */
+export async function getReportCount(userId: string): Promise<number> {
+  const q = query(
+    collection(db, REPORTS_COLLECTION),
+    where('userId', '==', userId)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.size;
+}
+
+/**
  * Subscribe to a report document so the UI updates in real time if the report is updated.
  * Returns an unsubscribe function.
  */
