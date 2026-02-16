@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 function buildPrompt(input) {
   return `
@@ -24,88 +24,65 @@ RESEARCH STEPS (use Google Search for each):
 3. Search for people actively asking for solutions like this product. Find real search phrases, real forum threads, real questions.
 4. Search for competitors and where they have presence.
 
-REPORT STRUCTURE:
-1. PERSONA: Identify the EXACT ideal customer based on your research. Include job titles, industry, technical level, and 3-5 specific pain points.
-2. PLATFORMS (6-12): For each platform provide:
-   - Real, verified community names (subreddits like r/startups, LinkedIn groups, X hashtags, Discord servers, forums)
-   - Why THIS audience is specifically there (2-3 sentences based on your research)
-   - bestPostTypes: 2-4 content types that work on this platform
-   - frequency: recommended posting cadence
-   - visibility, engagement, conversionIntent: High/Medium/Low
-3. ADVANCED:
-   - competitorPresence: Where competitors actually show up (based on search)
-   - gaps: 3-5 real opportunities you found
-   - keywordClusters: 5-10 real search terms people use
-   - whatToSayExamples: 3-6 platform-specific examples
-   - whoIsLookingForSolution: WHO is actively searching. Include real search phrases, real places they ask, real job titles.
+REPORT STRUCTURE (return as JSON):
+{
+  "persona": {
+    "title": "string",
+    "description": "string",
+    "jobRoles": ["string"],
+    "userType": "Founder|Consumer|Business Owner|Developer",
+    "technicalLevel": "Non-Technical|Semi-Technical|Technical",
+    "industry": "string",
+    "painPoints": ["string"]
+  },
+  "platforms": [
+    {
+      "name": "string",
+      "communities": ["real community names"],
+      "importance": "2-3 sentence explanation",
+      "bestPostTypes": ["string"],
+      "frequency": "string",
+      "visibility": "High|Medium|Low",
+      "engagement": "High|Medium|Low",
+      "conversionIntent": "High|Medium|Low"
+    }
+  ],
+  "advanced": {
+    "competitorPresence": "string",
+    "gaps": ["string"],
+    "keywordClusters": ["string"],
+    "whatToSayExamples": [
+      { "platform": "string", "example": "string", "whyItWorks": "string" }
+    ],
+    "whoIsLookingForSolution": {
+      "summary": "string",
+      "searchPhrases": ["string"],
+      "whereTheyAsk": ["string"],
+      "jobTitlesOrRoles": ["string"]
+    }
+  }
+}
 
-OUTPUT: Return valid JSON only. Every data point must come from your web research. NEVER return generic data.
+Return ONLY valid JSON. No markdown, no code fences, no explanation — just the JSON object. Every data point must come from your web research.
 `;
 }
 
-const RESPONSE_SCHEMA = {
-  type: Type.OBJECT,
-  properties: {
-    persona: {
-      type: Type.OBJECT,
-      properties: {
-        title: { type: Type.STRING },
-        description: { type: Type.STRING },
-        jobRoles: { type: Type.ARRAY, items: { type: Type.STRING } },
-        userType: { type: Type.STRING },
-        technicalLevel: { type: Type.STRING },
-        industry: { type: Type.STRING },
-        painPoints: { type: Type.ARRAY, items: { type: Type.STRING } },
-      },
-      required: ["title", "description", "jobRoles", "userType", "technicalLevel", "industry", "painPoints"],
-    },
-    platforms: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          name: { type: Type.STRING },
-          communities: { type: Type.ARRAY, items: { type: Type.STRING } },
-          importance: { type: Type.STRING },
-          bestPostTypes: { type: Type.ARRAY, items: { type: Type.STRING } },
-          frequency: { type: Type.STRING },
-          visibility: { type: Type.STRING },
-          engagement: { type: Type.STRING },
-          conversionIntent: { type: Type.STRING },
-        },
-        required: ["name", "communities", "importance", "bestPostTypes", "frequency", "visibility", "engagement", "conversionIntent"],
-      },
-    },
-    advanced: {
-      type: Type.OBJECT,
-      properties: {
-        competitorPresence: { type: Type.STRING },
-        gaps: { type: Type.ARRAY, items: { type: Type.STRING } },
-        keywordClusters: { type: Type.ARRAY, items: { type: Type.STRING } },
-        whatToSayExamples: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: { platform: { type: Type.STRING }, example: { type: Type.STRING }, whyItWorks: { type: Type.STRING } },
-            required: ["platform", "example", "whyItWorks"],
-          },
-        },
-        whoIsLookingForSolution: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            searchPhrases: { type: Type.ARRAY, items: { type: Type.STRING } },
-            whereTheyAsk: { type: Type.ARRAY, items: { type: Type.STRING } },
-            jobTitlesOrRoles: { type: Type.ARRAY, items: { type: Type.STRING } },
-          },
-          required: ["summary", "searchPhrases", "whereTheyAsk", "jobTitlesOrRoles"],
-        },
-      },
-      required: ["competitorPresence", "gaps", "keywordClusters", "whatToSayExamples", "whoIsLookingForSolution"],
-    },
-  },
-  required: ["persona", "platforms", "advanced"],
-};
+/**
+ * Extract JSON from a text response that may contain markdown fences or extra text.
+ */
+function extractJSON(text) {
+  let cleaned = text.trim();
+  // Remove markdown code fences if present
+  const fenceMatch = cleaned.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  if (fenceMatch) cleaned = fenceMatch[1].trim();
+  // Find the outermost { ... }
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start !== -1 && end > start) {
+    cleaned = cleaned.substring(start, end + 1);
+  }
+  return JSON.parse(cleaned);
+}
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -113,10 +90,6 @@ function setCors(res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-/**
- * Create the GoogleGenAI client.
- * Reads GEMINI_API_KEY from env. This key is free from Google AI Studio.
- */
 function createAIClient() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
@@ -124,9 +97,10 @@ function createAIClient() {
 }
 
 /**
- * Vercel serverless API: analyze product URL with Gemini + Google Search.
- * Gemini uses live Google Search to find real communities and real people.
- * No simulation — every data point comes from web research.
+ * Vercel serverless API: analyze product URL with Gemini + live Google Search.
+ * Google Search grounding is enabled so Gemini searches the real internet.
+ * No responseMimeType/responseSchema (incompatible with googleSearch tool).
+ * JSON is extracted from the text response instead.
  *
  * Env: GEMINI_API_KEY (free from https://aistudio.google.com/apikey)
  */
@@ -153,6 +127,10 @@ export default async function handler(req, res) {
     language: typeof language === "string" ? language : undefined,
   };
 
+  const geminiConfig = {
+    tools: [{ googleSearch: {} }],
+  };
+
   try {
     if (useStream) {
       res.setHeader("Content-Type", "text/event-stream");
@@ -166,11 +144,7 @@ export default async function handler(req, res) {
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: buildPrompt(input),
-        config: {
-          tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json",
-          responseSchema: RESPONSE_SCHEMA,
-        },
+        config: geminiConfig,
       });
       for await (const chunk of stream) {
         const text = chunk?.text ?? "";
@@ -187,10 +161,10 @@ export default async function handler(req, res) {
       }
 
       try {
-        const report = JSON.parse(fullText);
+        const report = extractJSON(fullText);
         res.write(`data: ${JSON.stringify({ type: "done", report })}\n\n`);
       } catch {
-        res.write(`data: ${JSON.stringify({ type: "error", message: "Failed to parse report. Please try again." })}\n\n`);
+        res.write(`data: ${JSON.stringify({ type: "error", message: "Failed to parse the analysis report. Please try again." })}\n\n`);
       }
       res.end();
       return;
@@ -200,20 +174,17 @@ export default async function handler(req, res) {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: buildPrompt(input),
-      config: {
-        tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: RESPONSE_SCHEMA,
-      },
+      config: geminiConfig,
     });
     const text = response?.text;
     if (!text) return res.status(502).json({ error: "Gemini returned empty response. Please try again." });
-    return res.status(200).json(JSON.parse(text));
+    const report = extractJSON(text);
+    return res.status(200).json(report);
   } catch (err) {
     const errMsg = err?.message || String(err);
     if (useStream) {
-      res.write(`data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`);
-      res.end();
+      try { res.write(`data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`); } catch {}
+      try { res.end(); } catch {}
     } else {
       return res.status(502).json({ error: errMsg });
     }
