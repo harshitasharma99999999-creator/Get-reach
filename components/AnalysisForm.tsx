@@ -16,10 +16,6 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAut
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      onAuthNeeded();
-      return;
-    }
     onAnalyze({ url, description, region, language });
   };
 
@@ -91,14 +87,11 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAut
           </>
         ) : (
           <>
-            {isLoggedIn ? 'Get started now' : 'Sign in to analyze'}
+            Try it now
             <ArrowRight className="w-5 h-5" />
           </>
         )}
       </button>
-      <p className="text-center text-xs text-slate-500">
-        Real-time data for your specific URL — Reddit, LinkedIn, X, and more.
-      </p>
     </form>
   );
 };

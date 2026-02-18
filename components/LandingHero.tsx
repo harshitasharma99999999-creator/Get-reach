@@ -29,12 +29,6 @@ const LandingHero: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAuth
           <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed mb-10">
             Enter your product URL. Get a real-time report: exact platforms, subreddits, communities, and what to say — based on who is actually looking for your solution.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <span className="inline-flex items-center gap-2 text-slate-500 text-sm font-medium">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              Real-time data for your URL
-            </span>
-          </div>
         </div>
         
         <div className="flex-1 w-full max-w-xl">

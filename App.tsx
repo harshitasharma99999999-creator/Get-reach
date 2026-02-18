@@ -67,16 +67,14 @@ const App: React.FC = () => {
   }, [reportId]);
 
   const handleAnalyze = async (data: AnalysisInput) => {
-    if (!user) {
-      setShowAuth(true);
-      return;
-    }
-    const count = await getReportCount(user.uid);
-    if (count >= 1) {
-      setError("You've used your one-time free trial. Subscribe to run more analyses.");
-      setActiveSection('pricing');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
+    if (user) {
+      const count = await getReportCount(user.uid);
+      if (count >= 1) {
+        setError("You've used your one-time free trial. Subscribe to run more analyses.");
+        setActiveSection('pricing');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
     }
     setInputUrl(data.url);
     setIsLoading(true);
@@ -89,10 +87,12 @@ const App: React.FC = () => {
       setReport(result);
       setActiveSection('home');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      try {
-        const id = await saveReport(user.uid, result);
-        setReportId(id);
-      } catch (_) {}
+      if (user) {
+        try {
+          const id = await saveReport(user.uid, result);
+          setReportId(id);
+        } catch (_) {}
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
     } finally {
