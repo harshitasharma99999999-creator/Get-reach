@@ -12,13 +12,20 @@
     <meta property="og:title" content="GetReach - Find Where Your Customers Are" />
     <meta property="og:description" content="Find exactly where your ideal customers are on the internet. Enter your product URL and get the exact platforms and communities to reach them." />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+        --font-body: 'Inter', system-ui, sans-serif;
+      }
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: var(--font-body);
         background: #0f172a;
         color: #f8fafc;
         -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3, .font-heading {
+        font-family: var(--font-heading);
       }
       @keyframes gradient {
         0% { background-position: 0% 50%; }
