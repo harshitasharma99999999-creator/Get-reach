@@ -27,7 +27,7 @@ const LandingHero: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAuth
             for founders and entrepreneurs
           </p>
           <p className="text-slate-400 text-lg md:text-xl max-w-xl leading-relaxed mb-10">
-            Enter your product URL. Get a real-time report: exact platforms, subreddits, communities, and what to say — based on who is actually looking for your solution.
+            Enter your product URL and a short description (both required). We search the internet in real time and return exact platforms, subreddits, and what to say — based on who is actually looking for your solution.
           </p>
         </div>
         

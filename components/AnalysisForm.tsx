@@ -38,14 +38,19 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAut
       <div className="space-y-2">
         <label className="text-sm font-bold text-slate-300 flex items-center gap-2.5">
           <FileText className="w-4 h-4 text-orange-400" />
-          Description (optional)
+          Product description <span className="text-orange-400">(required)</span>
         </label>
         <textarea
-          placeholder="What problems do you solve? Who is your ideal user?"
+          required
+          minLength={20}
+          placeholder="e.g. We help indie founders validate ideas with real customer interviews. Ideal user: solo founders, pre-revenue."
           className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-600 bg-slate-800/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all outline-none min-h-[100px] resize-none"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        <p className="text-xs text-slate-500 font-medium">
+          We use your URL + this description to find the right communities. A short pitch (who you help, what you do) gives much better results.
+        </p>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

@@ -10,7 +10,12 @@ import {
   Copy,
   MapPin,
   BarChart3,
-  Search
+  Search,
+  Lock,
+  RefreshCw,
+  TrendingUp,
+  Bell,
+  Zap
 } from 'lucide-react';
 import {
   BarChart,
@@ -25,7 +30,13 @@ import {
 
 interface Props {
   report: ReachReport;
+  onGoToPricing?: () => void;
 }
+
+/** Free report shows a shorter preview; deeper insights are behind paywall. */
+const FREE_COMMUNITIES_PER_PLATFORM = 2;
+const FREE_WHAT_TO_SAY_COUNT = 1;
+const FREE_KEYWORD_COUNT = 5;
 
 function getCommunityUrl(platformName: string, communityName: string): string | null {
   const name = typeof communityName === 'string' ? communityName : (communityName as Community).name;
@@ -105,7 +116,7 @@ const PotentialBadge = ({ percent }: { percent: number }) => {
   );
 };
 
-const Dashboard: React.FC<Props> = ({ report }) => {
+const Dashboard: React.FC<Props> = ({ report, onGoToPricing }) => {
   const chartData = useMemo(
     () =>
       report.platforms.map((p) => ({
@@ -134,6 +145,25 @@ const Dashboard: React.FC<Props> = ({ report }) => {
     });
   };
 
+  const PaywallCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    onGoToPricing ? (
+      <button
+        type="button"
+        onClick={onGoToPricing}
+        className="w-full rounded-2xl border-2 border-dashed border-blue-300/50 bg-blue-50/50 p-8 text-left hover:border-blue-400 hover:bg-blue-50 transition-all group"
+      >
+        <div className="flex items-center gap-3 text-blue-700 font-black mb-2">
+          <Lock className="w-5 h-5" />
+          {title}
+        </div>
+        <p className="text-slate-600 text-sm font-medium mb-4">{children}</p>
+        <span className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm group-hover:underline">
+          Subscribe to unlock <ArrowRight className="w-4 h-4" />
+        </span>
+      </button>
+    ) : null
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 pb-48 space-y-28 md:space-y-32 bg-slate-950">
       {/* Real data badge */}
@@ -143,6 +173,43 @@ const Dashboard: React.FC<Props> = ({ report }) => {
           Based on real communities & live platform data — not a simulation
         </span>
       </div>
+
+      {/* Why subscribe — recurring value */}
+      {onGoToPricing && (
+        <section className="relative overflow-hidden rounded-3xl border-2 border-blue-200/80 bg-gradient-to-br from-blue-50 via-white to-slate-50 p-8 md:p-12 shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-2">Why keep GetReach?</h2>
+              <p className="text-gray-600 font-medium max-w-xl mb-6">One free report is just the start. Subscribers get ongoing value.</p>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700 font-medium">
+                <li className="flex items-center gap-3">
+                  <RefreshCw className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  Weekly re-runs — refresh your report as the market changes
+                </li>
+                <li className="flex items-center gap-3">
+                  <TrendingUp className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  Track trends over time — see new communities and keywords
+                </li>
+                <li className="flex items-center gap-3">
+                  <Bell className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  High-intent alerts — when new pockets of demand appear
+                </li>
+                <li className="flex items-center gap-3">
+                  <Zap className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  Full reports every time — all insights, no limits
+                </li>
+              </ul>
+            </div>
+            <button
+              type="button"
+              onClick={onGoToPricing}
+              className="flex-shrink-0 px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-lg hover:bg-blue-700 transition-all shadow-lg active:scale-95"
+            >
+              View plans
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* Who's looking for your solution */}
       {report.advanced.whoIsLookingForSolution && (
@@ -159,40 +226,46 @@ const Dashboard: React.FC<Props> = ({ report }) => {
               </div>
             </div>
             <p className="text-slate-300 font-medium text-lg leading-relaxed mb-8 max-w-3xl">{report.advanced.whoIsLookingForSolution.summary}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="space-y-3">
-                <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Search phrases & questions they use</p>
-                <ul className="space-y-2">
-                  {report.advanced.whoIsLookingForSolution.searchPhrases.map((phrase, i) => (
-                    <li key={i} className="flex items-start gap-2 text-slate-300 font-medium">
-                      <span className="text-orange-400 mt-1">&quot;</span>
-                      <span>{phrase}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-3">
-                <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Where they ask</p>
-                <ul className="space-y-2">
-                  {report.advanced.whoIsLookingForSolution.whereTheyAsk.map((place, i) => (
-                    <li key={i} className="text-slate-300 font-medium flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-orange-500 rounded-full flex-shrink-0" />
-                      {place}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-3">
-                <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Job titles & roles</p>
-                <div className="flex flex-wrap gap-2">
-                  {report.advanced.whoIsLookingForSolution.jobTitlesOrRoles.map((role, i) => (
-                    <span key={i} className="px-4 py-2 bg-orange-500/10 text-orange-400 rounded-xl text-sm font-bold border border-orange-500/30">
-                      {role}
-                    </span>
-                  ))}
+            {onGoToPricing ? (
+              <PaywallCard title="Deeper insights — subscribe to unlock">
+                Full list of search phrases they use, where they ask (Reddit, X, etc.), and job titles & roles — so you can target with precision.
+              </PaywallCard>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Search phrases & questions they use</p>
+                  <ul className="space-y-2">
+                    {report.advanced.whoIsLookingForSolution.searchPhrases.map((phrase, i) => (
+                      <li key={i} className="flex items-start gap-2 text-slate-300 font-medium">
+                        <span className="text-orange-400 mt-1">&quot;</span>
+                        <span>{phrase}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Where they ask</p>
+                  <ul className="space-y-2">
+                    {report.advanced.whoIsLookingForSolution.whereTheyAsk.map((place, i) => (
+                      <li key={i} className="text-slate-300 font-medium flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-orange-500 rounded-full flex-shrink-0" />
+                        {place}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Job titles & roles</p>
+                  <div className="flex flex-wrap gap-2">
+                    {report.advanced.whoIsLookingForSolution.jobTitlesOrRoles.map((role, i) => (
+                      <span key={i} className="px-4 py-2 bg-orange-500/10 text-orange-400 rounded-xl text-sm font-bold border border-orange-500/30">
+                        {role}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       )}
@@ -282,7 +355,9 @@ const Dashboard: React.FC<Props> = ({ report }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
           {report.platforms.map((platform, i) => {
-            const communities = normalizeCommunities(platform);
+            const allCommunities = normalizeCommunities(platform);
+            const communities = onGoToPricing ? allCommunities.slice(0, FREE_COMMUNITIES_PER_PLATFORM) : allCommunities;
+            const hasMore = onGoToPricing && allCommunities.length > FREE_COMMUNITIES_PER_PLATFORM;
             const potential = intentToPotential(platform.conversionIntent);
             return (
               <div
@@ -338,6 +413,16 @@ const Dashboard: React.FC<Props> = ({ report }) => {
                       </span>
                     ))}
                   </div>
+                  {hasMore && onGoToPricing && (
+                    <button
+                      type="button"
+                      onClick={onGoToPricing}
+                      className="mt-3 text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5"
+                    >
+                      +{allCommunities.length - FREE_COMMUNITIES_PER_PLATFORM} more — Subscribe to see all
+                      <Lock className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
                 {getPlatformUrl(platform.name) ? (
                   <a
@@ -405,13 +490,18 @@ const Dashboard: React.FC<Props> = ({ report }) => {
                 What to say
               </h3>
               <div className="space-y-6">
-                {report.advanced.whatToSayExamples.map((ex, i) => (
+                {(onGoToPricing ? report.advanced.whatToSayExamples.slice(0, FREE_WHAT_TO_SAY_COUNT) : report.advanced.whatToSayExamples).map((ex, i) => (
                   <div key={i} className="bg-white/[0.04] border border-blue-500/10 rounded-[2rem] p-8 space-y-4">
                     <span className="text-blue-400 font-black text-xs uppercase tracking-widest">{ex.platform}</span>
                     <p className="text-white font-bold text-xl leading-relaxed">"{ex.example}"</p>
                     <p className="text-slate-400 text-sm font-medium">{ex.whyItWorks}</p>
                   </div>
                 ))}
+                {onGoToPricing && report.advanced.whatToSayExamples.length > FREE_WHAT_TO_SAY_COUNT && (
+                  <PaywallCard title={`+${report.advanced.whatToSayExamples.length - FREE_WHAT_TO_SAY_COUNT} more "What to say" examples`}>
+                    Platform-specific copy that converts — subscribe to unlock all examples.
+                  </PaywallCard>
+                )}
               </div>
             </div>
             <div className="space-y-10">
@@ -422,7 +512,7 @@ const Dashboard: React.FC<Props> = ({ report }) => {
                 Keywords they use
               </h3>
               <div className="flex flex-wrap gap-3">
-                {report.advanced.keywordClusters.map((kw, i) => (
+                {(onGoToPricing ? report.advanced.keywordClusters.slice(0, FREE_KEYWORD_COUNT) : report.advanced.keywordClusters).map((kw, i) => (
                   <span
                     key={i}
                     className="px-6 py-3 bg-white/5 rounded-2xl border border-blue-500/10 text-slate-200 font-bold hover:bg-blue-600 hover:text-white transition-all cursor-default"
@@ -431,17 +521,27 @@ const Dashboard: React.FC<Props> = ({ report }) => {
                   </span>
                 ))}
               </div>
+              {(onGoToPricing ? report.advanced.keywordClusters.length > FREE_KEYWORD_COUNT : false) && (
+                <PaywallCard title="All keywords & opportunities">
+                  Unlock the full keyword list and gap/opportunity analysis for your niche.
+                </PaywallCard>
+              )}
               {report.advanced.gaps && report.advanced.gaps.length > 0 && (
                 <div>
                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4">Opportunities</p>
                   <ul className="space-y-2">
-                    {report.advanced.gaps.map((g, i) => (
+                    {(onGoToPricing ? report.advanced.gaps.slice(0, 2) : report.advanced.gaps).map((g, i) => (
                       <li key={i} className="text-slate-300 font-medium text-sm flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0" />
                         {g}
                       </li>
                     ))}
                   </ul>
+                  {onGoToPricing && report.advanced.gaps.length > 2 && (
+                    <PaywallCard title="Full opportunities list">
+                      Subscribe to see all gap/opportunity insights.
+                    </PaywallCard>
+                  )}
                 </div>
               )}
             </div>

@@ -38,7 +38,7 @@ const DiscoveryPipeline: React.FC<Props> = ({ report, inputUrl, isLoading }) => 
     if (!report) {
       return (
         <div className="p-8 text-center text-slate-500">
-          <p className="font-medium">Enter your product URL above and launch analysis to see real-time data here.</p>
+          <p className="font-medium">Enter your product URL and description above, then launch analysis to see real-time data here.</p>
         </div>
       );
     }

@@ -171,7 +171,7 @@ const App: React.FC = () => {
               </div>
             </div>
             <DiscoveryPipeline report={report} inputUrl={inputUrl} isLoading={false} />
-            <Dashboard report={report} />
+            <Dashboard report={report} onGoToPricing={() => { setActiveSection('pricing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
           </div>
         )}
       </main>
