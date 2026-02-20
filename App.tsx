@@ -25,6 +25,7 @@ const App: React.FC = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [user, setUser] = useState<{ email: string; uid: string } | null>(null);
+  const [fromFreeTrialLimit, setFromFreeTrialLimit] = useState(false);
   const reportUnsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -67,14 +68,16 @@ const App: React.FC = () => {
   }, [reportId]);
 
   const handleAnalyze = async (data: AnalysisInput) => {
-    if (user) {
-      const count = await getReportCount(user.uid);
-      if (count >= 1) {
-        setError("You've used your one-time free trial. Subscribe to run more analyses.");
-        setActiveSection('pricing');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
+    const count = await getReportCount(user.uid);
+    if (count >= 1) {
+      setFromFreeTrialLimit(true);
+      setActiveSection('pricing');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
     setInputUrl(data.url);
     setIsLoading(true);
@@ -109,6 +112,7 @@ const App: React.FC = () => {
   };
 
   const handleNavigate = (section: 'home' | 'pricing') => {
+    if (section === 'pricing') setFromFreeTrialLimit(false);
     setActiveSection(section);
     if (section === 'home') {
       setReport(null);
@@ -134,7 +138,12 @@ const App: React.FC = () => {
           />
         )}
 
-        {activeSection === 'pricing' && <Pricing userEmail={user?.email} />}
+        {activeSection === 'pricing' && (
+          <Pricing
+            userEmail={user?.email}
+            fromFreeTrialLimit={fromFreeTrialLimit}
+          />
+        )}
 
         {isLoading && (
           <div className="max-w-7xl mx-auto px-4 py-32 flex flex-col items-center justify-center text-center">

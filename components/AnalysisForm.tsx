@@ -90,9 +90,14 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, isLoading, isLoggedIn, onAut
             <Loader2 className="w-5 h-5 animate-spin" />
             Analyzing your URL...
           </>
+        ) : isLoggedIn ? (
+          <>
+            Run your free report
+            <ArrowRight className="w-5 h-5" />
+          </>
         ) : (
           <>
-            Try it now
+            Sign in to get your one free report
             <ArrowRight className="w-5 h-5" />
           </>
         )}

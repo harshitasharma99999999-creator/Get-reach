@@ -180,19 +180,19 @@ const Dashboard: React.FC<Props> = ({ report, onGoToPricing }) => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div>
               <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-2">Why keep GetReach?</h2>
-              <p className="text-gray-600 font-medium max-w-xl mb-6">One free report is just the start. Subscribers get ongoing value.</p>
+              <p className="text-gray-600 font-medium max-w-xl mb-6">Only one free analysis per account. After that, subscribers get recurring value:</p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700 font-medium">
                 <li className="flex items-center gap-3">
                   <RefreshCw className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  Weekly re-runs — refresh your report as the market changes
+                  <strong>Weekly updates</strong> — re-run your report as the market changes
                 </li>
                 <li className="flex items-center gap-3">
                   <TrendingUp className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  Track trends over time — see new communities and keywords
+                  <strong>Tracking</strong> — see how communities and demand shift over time
                 </li>
                 <li className="flex items-center gap-3">
                   <Bell className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  High-intent alerts — when new pockets of demand appear
+                  <strong>Alerts</strong> — get notified when new high-intent communities appear
                 </li>
                 <li className="flex items-center gap-3">
                   <Zap className="w-5 h-5 text-blue-600 flex-shrink-0" />

@@ -45,12 +45,16 @@ const REPORT_ITEMS = [
 
 const FAQ_ITEMS = [
   {
-    q: 'Is the data real or simulated?',
-    a: 'Real. We use live web search to find actual communities, threads, and people talking about problems your product solves. No generic templates.',
+    q: 'How many free analyses do I get?',
+    a: 'Only one free analysis per account — no exceptions. We want you to see the quality; after that, subscription unlocks unlimited reports plus weekly updates, tracking, and alerts.',
   },
   {
-    q: 'How many reports do I get?',
-    a: 'One free report per account so you can see the full value. After that, subscribe for unlimited reports, weekly re-runs, and deeper insights.',
+    q: 'Why pay after the first report?',
+    a: 'Your first report is a one-off snapshot. Subscribers get recurring value: (1) Weekly updates — re-run your report as the market changes. (2) Tracking — see how communities and demand shift over time. (3) Alerts — get notified when new high-intent communities appear. So you’re not buying another snapshot; you’re buying always-on customer discovery.',
+  },
+  {
+    q: 'Is the data real or simulated?',
+    a: 'Real. We use live web search to find actual communities, threads, and people talking about problems your product solves. No generic templates.',
   },
   {
     q: 'Why do I need to add a description?',
@@ -102,6 +106,11 @@ const LandingPage: React.FC<Props> = ({
             </div>
           </div>
           <div className="max-w-xl mx-auto">
+            {!isLoggedIn && (
+              <p className="text-center text-slate-400 text-sm font-medium mb-4">
+                Only one free analysis per account — no exceptions. Sign in or create an account to run yours — no credit card required.
+              </p>
+            )}
             <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 md:p-8 shadow-2xl">
               <AnalysisForm
                 onAnalyze={onAnalyze}
@@ -334,6 +343,17 @@ const LandingPage: React.FC<Props> = ({
               </div>
             ))}
           </div>
+          <p className="text-center mt-10 text-slate-400 font-medium">
+            Have other questions? DM us on X:{' '}
+            <a
+              href="https://x.com/Harrshita_X"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-400 font-bold hover:text-orange-300 underline focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+            >
+              @Harrshita_X
+            </a>
+          </p>
         </div>
       </section>
 
@@ -344,7 +364,7 @@ const LandingPage: React.FC<Props> = ({
             Stop guessing where your customers are
           </h2>
           <p className="text-slate-400 text-lg mb-8">
-            One free report. Real communities. Real copy. Try it above, or{' '}
+            Only one free analysis per account. Real communities, real copy. Try it above, or{' '}
             <button
               type="button"
               onClick={onGoToPricing}

@@ -54,11 +54,11 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-500 px-3 py-1 rounded-full text-xs font-bold mb-4">
               <Sparkles className="w-3 h-3" />
-              ONE-TIME FREE TRIAL
+              ONLY ONE FREE ANALYSIS PER ACCOUNT
             </div>
             <h2 className="text-3xl font-bold text-gray-900">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
             <p className="text-gray-500 mt-2 text-sm">
-              {isLogin ? 'Enter your details to sign in' : 'Start reaching your customers today'}
+              {isLogin ? 'Enter your details to sign in' : 'Sign in to get your one free report — no credit card required'}
             </p>
           </div>
 
@@ -102,7 +102,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
 
             {!isLogin && (
               <p className="text-xs text-gray-400 mt-4 px-2">
-                By signing up, you agree to our Terms of Service. You get one free analysis. After that, subscription required ($3.99/mo).
+                By signing up, you agree to our Terms of Service. Only one free analysis per account — no exceptions. After that, subscription required (Weekly updates, Tracking, Alerts from $3.99/mo).
               </p>
             )}
 
@@ -111,7 +111,7 @@ const AuthModal: React.FC<Props> = ({ onClose, onSuccess }) => {
               disabled={loading}
               className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-orange-600 transition-all shadow-lg shadow-orange-100 flex items-center justify-center gap-2 mt-6"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Sign In' : 'Sign up — 1 free analysis')}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Sign In' : 'Sign up — 1 free analysis only')}
             </button>
           </form>
 
