@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header, { GetReachLogo } from './components/Header';
-import LandingHero from './components/LandingHero';
+import LandingPage from './components/LandingPage';
 import DiscoveryPipeline from './components/DiscoveryPipeline';
 import Dashboard from './components/Dashboard';
 import Pricing from './components/Pricing';
@@ -124,10 +124,14 @@ const App: React.FC = () => {
 
       <main className="relative flex-grow">
         {activeSection === 'home' && !report && !isLoading && (
-          <>
-            <LandingHero onAnalyze={handleAnalyze} isLoading={isLoading} isLoggedIn={!!user} onAuthNeeded={() => setShowAuth(true)} />
-            <DiscoveryPipeline report={null} inputUrl={inputUrl} isLoading={false} />
-          </>
+          <LandingPage
+            onAnalyze={handleAnalyze}
+            isLoading={isLoading}
+            isLoggedIn={!!user}
+            onAuthNeeded={() => setShowAuth(true)}
+            inputUrl={inputUrl}
+            onGoToPricing={() => { setActiveSection('pricing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          />
         )}
 
         {activeSection === 'pricing' && <Pricing userEmail={user?.email} />}
