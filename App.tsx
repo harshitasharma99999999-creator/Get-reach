@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header, { GetReachLogo } from './components/Header';
 import LandingPage from './components/LandingPage';
 import DiscoveryPipeline from './components/DiscoveryPipeline';
@@ -217,6 +218,7 @@ const App: React.FC = () => {
       )}
       {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} />}
       {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} userEmail={user?.email} userId={user?.uid} />}
+      <Analytics />
     </div>
   );
 };
