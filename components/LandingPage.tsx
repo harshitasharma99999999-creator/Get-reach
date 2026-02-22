@@ -32,7 +32,7 @@ interface Props {
 
 /** RedLeads-style 3-step journey (our data) */
 const THREE_STEPS = [
-  { step: 1, title: 'Define your target', sub: 'Enter your website & description', body: 'Add your product URL and who it's for. GetReach maps relevant platforms and communities automatically.', icon: Target },
+  { step: 1, title: 'Define your target', sub: 'Enter your website & description', body: 'Add your product URL and who it\'s for. GetReach maps relevant platforms and communities automatically.', icon: Target },
   { step: 2, title: 'We search the internet', sub: 'AI finds high-intent conversations', body: 'Live search across Reddit, X, LinkedIn, Indie Hackers. Real threads, real people asking for solutions like yours.', icon: Search },
   { step: 3, title: 'Get your report & engage', sub: 'Exact communities + what to say', body: 'One report: persona, platforms, links, and copy. Join the conversation with value first.', icon: MessageSquare },
 ];
@@ -51,7 +51,7 @@ const REPORT_ITEMS = [
   { title: 'Ideal customer persona', desc: 'Who they are, what they need, where they hang out.', icon: Users },
   { title: 'Platforms that convert', desc: 'Reddit, X, LinkedIn, Indie Hackers — ranked by intent.', icon: MapPin },
   { title: 'Exact communities', desc: 'Subreddits, groups, and hashtags with links you can click.', icon: Globe },
-  { title: '"What to say" examples', desc: 'Platform-specific copy so you don't sound like an ad.', icon: MessageSquare },
+  { title: '"What to say" examples', desc: 'Platform-specific copy so you don\'t sound like an ad.', icon: MessageSquare },
   { title: 'Keywords & gaps', desc: 'Phrases they use and opportunities competitors miss.', icon: Sparkles },
 ];
 
@@ -62,7 +62,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Why pay after the first report?',
-    a: 'Your first report is a one-off snapshot. Subscribers get recurring value: (1) Weekly updates — re-run your report as the market changes. (2) Tracking — see how communities and demand shift over time. (3) Alerts — get notified when new high-intent communities appear. So you're not buying another snapshot; you're buying always-on customer discovery.',
+    a: 'Your first report is a one-off snapshot. Subscribers get recurring value: (1) Weekly updates — re-run your report as the market changes. (2) Tracking — see how communities and demand shift over time. (3) Alerts — get notified when new high-intent communities appear. So you\'re not buying another snapshot; you\'re buying always-on customer discovery.',
   },
   {
     q: 'Is the data real or simulated?',
@@ -70,7 +70,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Why do I need to add a description?',
-    a: 'Your URL tells us what the product is; your description tells us who it's for and what problem it solves. That combo lets us find the right communities instead of generic ones.',
+    a: 'Your URL tells us what the product is; your description tells us who it\'s for and what problem it solves. That combo lets us find the right communities instead of generic ones.',
   },
   {
     q: 'How long does analysis take?',
