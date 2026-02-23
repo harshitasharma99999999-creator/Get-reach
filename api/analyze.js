@@ -142,7 +142,7 @@ export default async function handler(req, res) {
 
       let fullText = "";
       const stream = await ai.models.generateContentStream({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         contents: buildPrompt(input),
         config: geminiConfig,
       });
@@ -172,7 +172,7 @@ export default async function handler(req, res) {
 
     // Non-streaming
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: buildPrompt(input),
       config: geminiConfig,
     });

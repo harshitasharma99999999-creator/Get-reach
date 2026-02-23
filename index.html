@@ -7,11 +7,40 @@
     <link rel="canonical" href="https://getreach.live/" />
     <title>GetReach - Find Where Your Customers Are</title>
     <meta name="description" content="Find exactly where your ideal customers are on the internet. Enter your product URL and get the exact platforms and communities to reach them." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <!-- Open Graph / Social sharing -->
     <meta property="og:url" content="https://getreach.live/" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="GetReach - Find Where Your Customers Are" />
     <meta property="og:description" content="Find exactly where your ideal customers are on the internet. Enter your product URL and get the exact platforms and communities to reach them." />
+    <meta property="og:image" content="https://getreach.live/logo.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@get__reach" />
+    <meta name="twitter:title" content="GetReach - Find Where Your Customers Are" />
+    <meta name="twitter:description" content="Find exactly where your ideal customers are on the internet. Enter your product URL and get the exact platforms and communities to reach them." />
+    <meta name="twitter:image" content="https://getreach.live/logo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: 'class' };
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
@@ -20,9 +49,17 @@
       }
       body {
         font-family: var(--font-body);
-        background: #0f172a;
-        color: #f8fafc;
+        background: #ffffff;
+        color: #111111;
         -webkit-font-smoothing: antialiased;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      html.dark body {
+        background: #0a0a0a;
+        color: #f5f5f5;
+      }
+      html.dark {
+        color-scheme: dark;
       }
       h1, h2, h3, .font-heading {
         font-family: var(--font-heading);
@@ -38,9 +75,12 @@
       }
 
       ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #1e293b; }
-      ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+      ::-webkit-scrollbar-track { background: #f1f1f1; }
+      ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+      html.dark ::-webkit-scrollbar-track { background: #1a1a1a; }
+      html.dark ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+      html.dark ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
 
       ::placeholder { color: #64748b !important; opacity: 1; }
       
