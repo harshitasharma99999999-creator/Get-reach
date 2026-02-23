@@ -131,6 +131,94 @@ export default async function handler(req, res) {
     tools: [{ googleSearch: {} }],
   };
 
+  // Try models in order — each has its own independent free-tier quota
+  const MODELS = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+
+  function cleanError(err) {
+    const raw = err?.message || String(err);
+    // Quota / rate limit — check multiple ways Gemini reports it
+    if (
+      raw.includes("429") ||
+      raw.includes("RESOURCE_EXHAUSTED") ||
+      raw.includes("quota") ||
+      raw.includes("Quota") ||
+      raw.includes("rate") ||
+      raw.includes("limit: 0")
+    ) {
+      return "Our AI service is at capacity right now. Please try again in 1–2 minutes.";
+    }
+    if (raw.includes("API_KEY") || raw.includes("401") || raw.includes("403") || raw.includes("API key")) {
+      return "Configuration issue on our end. Please try again shortly.";
+    }
+    if (raw.includes("timeout") || raw.includes("DEADLINE") || raw.includes("timed out")) {
+      return "Analysis timed out. Please try again.";
+    }
+    if (raw.includes("fetch") || raw.includes("network") || raw.includes("ENOTFOUND")) {
+      return "Network error. Please check your connection and try again.";
+    }
+    return "Analysis failed. Please try again.";
+  }
+
+  async function tryStream(res) {
+    let lastErr = null;
+    for (const model of MODELS) {
+      try {
+        let fullText = "";
+        const stream = await ai.models.generateContentStream({
+          model,
+          contents: buildPrompt(input),
+          config: geminiConfig,
+        });
+        for await (const chunk of stream) {
+          const text = chunk?.text ?? "";
+          if (text) {
+            fullText += text;
+            res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
+          }
+        }
+        if (!fullText) throw new Error("Empty response");
+        const report = extractJSON(fullText);
+        res.write(`data: ${JSON.stringify({ type: "done", report })}\n\n`);
+        res.end();
+        return;
+      } catch (err) {
+        lastErr = err;
+        const msg = err?.message || "";
+        // Only try next model on quota errors
+        if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota")) {
+          continue;
+        }
+        break;
+      }
+    }
+    res.write(`data: ${JSON.stringify({ type: "error", message: cleanError(lastErr) })}\n\n`);
+    res.end();
+  }
+
+  async function tryNonStream() {
+    let lastErr = null;
+    for (const model of MODELS) {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: buildPrompt(input),
+          config: geminiConfig,
+        });
+        const text = response?.text;
+        if (!text) throw new Error("Empty response");
+        return extractJSON(text);
+      } catch (err) {
+        lastErr = err;
+        const msg = err?.message || "";
+        if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota")) {
+          continue;
+        }
+        break;
+      }
+    }
+    throw new Error(cleanError(lastErr));
+  }
+
   try {
     if (useStream) {
       res.setHeader("Content-Type", "text/event-stream");
@@ -139,54 +227,18 @@ export default async function handler(req, res) {
       res.setHeader("X-Accel-Buffering", "no");
       res.status(200);
       if (typeof res.flushHeaders === "function") res.flushHeaders();
-
-      let fullText = "";
-      const stream = await ai.models.generateContentStream({
-        model: "gemini-2.0-flash",
-        contents: buildPrompt(input),
-        config: geminiConfig,
-      });
-      for await (const chunk of stream) {
-        const text = chunk?.text ?? "";
-        if (text) {
-          fullText += text;
-          res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
-        }
-      }
-
-      if (!fullText) {
-        res.write(`data: ${JSON.stringify({ type: "error", message: "Gemini returned empty response. Please try again." })}\n\n`);
-        res.end();
-        return;
-      }
-
-      try {
-        const report = extractJSON(fullText);
-        res.write(`data: ${JSON.stringify({ type: "done", report })}\n\n`);
-      } catch {
-        res.write(`data: ${JSON.stringify({ type: "error", message: "Failed to parse the analysis report. Please try again." })}\n\n`);
-      }
-      res.end();
+      await tryStream(res);
       return;
     }
-
-    // Non-streaming
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: buildPrompt(input),
-      config: geminiConfig,
-    });
-    const text = response?.text;
-    if (!text) return res.status(502).json({ error: "Gemini returned empty response. Please try again." });
-    const report = extractJSON(text);
+    const report = await tryNonStream();
     return res.status(200).json(report);
   } catch (err) {
-    const errMsg = err?.message || String(err);
+    const msg = cleanError(err);
     if (useStream) {
-      try { res.write(`data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`); } catch {}
+      try { res.write(`data: ${JSON.stringify({ type: "error", message: msg })}\n\n`); } catch {}
       try { res.end(); } catch {}
     } else {
-      return res.status(502).json({ error: errMsg });
+      return res.status(502).json({ error: msg });
     }
   }
 }

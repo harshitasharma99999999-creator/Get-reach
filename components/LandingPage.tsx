@@ -157,10 +157,20 @@ const LandingPage: React.FC<Props> = ({
             {/* Social proof */}
             <div className="flex items-center justify-center gap-3 mt-5 text-gray-400 dark:text-gray-500 text-sm font-medium">
               <div className="flex -space-x-2">
-                {['Y', 'A', 'J'].map((l, i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-gray-900 dark:bg-white border-2 border-white dark:border-gray-950 flex items-center justify-center text-[10px] font-black text-white dark:text-gray-900">
-                    {l}
-                  </div>
+                {[
+                  { handle: 'yusukelp', fallback: 'Y' },
+                  { handle: 'ravikiran_dev7', fallback: 'R' },
+                  { handle: 'metalramsclub', fallback: 'M' },
+                ].map((u, i) => (
+                  <img
+                    key={i}
+                    src={`https://unavatar.io/twitter/${u.handle}?fallback=https://ui-avatars.com/api/?name=${u.fallback}&background=111111&color=fff`}
+                    alt={u.handle}
+                    className="w-7 h-7 rounded-full border-2 border-white dark:border-gray-950 object-cover bg-gray-200"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${u.fallback}&background=111111&color=fff&size=28`;
+                    }}
+                  />
                 ))}
               </div>
               <span>Indie founders use GetReach to find their first customers</span>
@@ -466,37 +476,39 @@ const LandingPage: React.FC<Props> = ({
               See why founders love GetReach
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
                 quote: "This is so useful! I've just been thinking about which subreddit fits me and this solved that! Amazing.",
                 name: 'Yusuke',
                 handle: '@yusukelp',
-                avatar: 'Y',
+                xHandle: 'yusukelp',
                 source: 'x',
               },
               {
                 quote: 'I love this product.',
                 name: 'metalRAM',
                 handle: '@metalramsclub',
-                avatar: 'M',
+                xHandle: 'metalramsclub',
                 source: 'x',
                 verified: true,
               },
               {
-                quote: 'Sounds interesting',
+                quote: 'Sounds interesting 🙌🏻',
                 name: 'Ray',
                 handle: '@ravikiran_dev7',
-                avatar: 'R',
+                xHandle: 'ravikiran_dev7',
                 source: 'x',
                 verified: true,
               },
               {
-                quote: 'GetReach replaced hours of research. I got a clear map of where my customers talk and what to say — within 30 seconds.',
-                name: 'Indie Founder',
-                handle: '@buildinpublic',
-                avatar: 'A',
+                quote: "It's looking great! Very clear what you're offering. The '1 free analysis per account' pop-up is a great addition.",
+                name: 'Nikolaos C.',
+                handle: '@nikolaos_ch',
+                xHandle: 'nikolaos_ch',
+                photo: '/nikolaos.png',
                 source: 'x',
+                verified: true,
               },
             ].map((t, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm dark:shadow-none flex flex-col">
@@ -513,9 +525,14 @@ const LandingPage: React.FC<Props> = ({
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 font-medium text-sm leading-relaxed mb-5 flex-grow">"{t.quote}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-gray-900 text-xs font-black flex-shrink-0">
-                    {t.avatar}
-                  </div>
+                  <img
+                    src={t.photo || `https://unavatar.io/twitter/${t.xHandle}?fallback=https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=111111&color=fff`}
+                    alt={t.name}
+                    className="w-9 h-9 rounded-full border border-gray-200 dark:border-gray-600 object-cover bg-gray-100 flex-shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=111111&color=fff&size=36`;
+                    }}
+                  />
                   <div>
                     <div className="flex items-center gap-1">
                       <p className="text-sm font-black text-gray-900 dark:text-white">{t.name}</p>

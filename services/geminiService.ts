@@ -44,7 +44,12 @@ export const fetchReportFromAPI = async (
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err?.error || `API error ${res.status}`);
+    const msg = err?.error || `API error ${res.status}`;
+    // Strip raw JSON if it leaked through — show clean message
+    if (msg.includes('{') || msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota')) {
+      throw new Error('Our AI service is at capacity right now. Please try again in 1–2 minutes.');
+    }
+    throw new Error(msg);
   }
 
   if (useStream && res.body) {
