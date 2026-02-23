@@ -484,6 +484,7 @@ const LandingPage: React.FC<Props> = ({
                 handle: '@yusukelp',
                 xHandle: 'yusukelp',
                 source: 'x',
+                verified: true,
               },
               {
                 quote: 'I love this product.',

@@ -127,12 +127,14 @@ export default async function handler(req, res) {
     language: typeof language === "string" ? language : undefined,
   };
 
+  // Only gemini-2.0-flash and gemini-2.0-flash-lite support Google Search grounding on free tier
+  // gemini-1.5-* do NOT support googleSearch tool — they need a different config
+  const MODELS_WITH_SEARCH = ["gemini-2.0-flash", "gemini-2.0-flash-lite"];
+  const MODELS_NO_SEARCH = ["gemini-1.5-flash", "gemini-1.5-pro"];
+
   const geminiConfig = {
     tools: [{ googleSearch: {} }],
   };
-
-  // Try models in order — each has its own independent free-tier quota
-  const MODELS = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
 
   function cleanError(err) {
     const raw = err?.message || String(err);
@@ -159,9 +161,14 @@ export default async function handler(req, res) {
     return "Analysis failed. Please try again.";
   }
 
+  function isQuotaError(msg) {
+    return msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota") || msg.includes("Quota") || msg.includes("limit: 0");
+  }
+
   async function tryStream(res) {
     let lastErr = null;
-    for (const model of MODELS) {
+    // First try models that support Google Search grounding
+    for (const model of MODELS_WITH_SEARCH) {
       try {
         let fullText = "";
         const stream = await ai.models.generateContentStream({
@@ -184,11 +191,38 @@ export default async function handler(req, res) {
       } catch (err) {
         lastErr = err;
         const msg = err?.message || "";
-        // Only try next model on quota errors
-        if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota")) {
-          continue;
-        }
+        if (isQuotaError(msg)) continue;
         break;
+      }
+    }
+    // Fallback: models without Google Search (still produce great analysis via training data)
+    if (lastErr && isQuotaError(lastErr?.message || "")) {
+      for (const model of MODELS_NO_SEARCH) {
+        try {
+          let fullText = "";
+          const stream = await ai.models.generateContentStream({
+            model,
+            contents: buildPrompt(input),
+            config: {},
+          });
+          for await (const chunk of stream) {
+            const text = chunk?.text ?? "";
+            if (text) {
+              fullText += text;
+              res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
+            }
+          }
+          if (!fullText) throw new Error("Empty response");
+          const report = extractJSON(fullText);
+          res.write(`data: ${JSON.stringify({ type: "done", report })}\n\n`);
+          res.end();
+          return;
+        } catch (err) {
+          lastErr = err;
+          const msg = err?.message || "";
+          if (isQuotaError(msg)) continue;
+          break;
+        }
       }
     }
     res.write(`data: ${JSON.stringify({ type: "error", message: cleanError(lastErr) })}\n\n`);
@@ -197,7 +231,7 @@ export default async function handler(req, res) {
 
   async function tryNonStream() {
     let lastErr = null;
-    for (const model of MODELS) {
+    for (const model of MODELS_WITH_SEARCH) {
       try {
         const response = await ai.models.generateContent({
           model,
@@ -210,10 +244,27 @@ export default async function handler(req, res) {
       } catch (err) {
         lastErr = err;
         const msg = err?.message || "";
-        if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota")) {
-          continue;
-        }
+        if (isQuotaError(msg)) continue;
         break;
+      }
+    }
+    if (lastErr && isQuotaError(lastErr?.message || "")) {
+      for (const model of MODELS_NO_SEARCH) {
+        try {
+          const response = await ai.models.generateContent({
+            model,
+            contents: buildPrompt(input),
+            config: {},
+          });
+          const text = response?.text;
+          if (!text) throw new Error("Empty response");
+          return extractJSON(text);
+        } catch (err) {
+          lastErr = err;
+          const msg = err?.message || "";
+          if (isQuotaError(msg)) continue;
+          break;
+        }
       }
     }
     throw new Error(cleanError(lastErr));
