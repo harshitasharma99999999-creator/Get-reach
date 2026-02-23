@@ -76,8 +76,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser?.email && firebaseUser?.uid) {
-        setUser({ email: firebaseUser.email, uid: firebaseUser.uid });
+      if (firebaseUser?.uid) {
+        const email = firebaseUser.email || firebaseUser.displayName || 'Google user';
+        setUser({ email, uid: firebaseUser.uid });
         try {
           const saved = await getLatestReport(firebaseUser.uid);
           if (saved) {
