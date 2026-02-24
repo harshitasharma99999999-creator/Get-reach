@@ -161,10 +161,11 @@ const LandingPage: React.FC<Props> = ({
                   { handle: 'yusukelp', fallback: 'Y' },
                   { handle: 'ravikiran_dev7', fallback: 'R' },
                   { handle: 'metalramsclub', fallback: 'M' },
+                  { handle: 'duxorX', fallback: 'D', photo: '/dusan.png' },
                 ].map((u, i) => (
                   <img
                     key={i}
-                    src={`https://unavatar.io/twitter/${u.handle}?fallback=https://ui-avatars.com/api/?name=${u.fallback}&background=111111&color=fff`}
+                    src={u.photo || `https://unavatar.io/twitter/${u.handle}?fallback=https://ui-avatars.com/api/?name=${u.fallback}&background=111111&color=fff`}
                     alt={u.handle}
                     className="w-7 h-7 rounded-full border-2 border-white dark:border-gray-950 object-cover bg-gray-200"
                     onError={(e) => {
@@ -508,6 +509,15 @@ const LandingPage: React.FC<Props> = ({
                 handle: '@nikolaos_ch',
                 xHandle: 'nikolaos_ch',
                 photo: '/nikolaos.png',
+                source: 'x',
+                verified: true,
+              },
+              {
+                quote: 'I like the design.',
+                name: 'Dusan',
+                handle: '@duxorX',
+                xHandle: 'duxorX',
+                photo: '/dusan.png',
                 source: 'x',
                 verified: true,
               },
