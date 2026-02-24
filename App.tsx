@@ -302,6 +302,22 @@ const App: React.FC = () => {
             <span className="text-gray-300 dark:text-gray-600">© 2026</span>
           </div>
         </div>
+        {/* ReachReddit credit */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Also by the same maker —</span>
+            <a
+              href="https://reach-reddit.web.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-black text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-2"
+            >
+              ReachReddit
+            </a>
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium hidden sm:inline">·</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">A Chrome extension that finds subreddits, drafts rule-aware posts, and helps founders grow organically on Reddit — without getting banned.</span>
+          </div>
+        </div>
       </footer>
 
       {showAuth && (
