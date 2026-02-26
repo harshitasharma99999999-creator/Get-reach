@@ -91,7 +91,7 @@ function setCors(res) {
 }
 
 function createAIClient() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = (process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey) return null;
   return new GoogleGenAI({ apiKey });
 }
