@@ -147,7 +147,7 @@ export default async function handler(req, res) {
       raw.includes("rate") ||
       raw.includes("limit: 0")
     ) {
-      return "Our AI service is at capacity right now. Please try again in 1–2 minutes.";
+      return "Our free daily quota for the AI has been used. It resets at midnight Pacific Time — try again tomorrow, or enable pay-as-you-go billing in Google Cloud for uninterrupted use (very low cost).";
     }
     if (raw.includes("API_KEY") || raw.includes("401") || raw.includes("403") || raw.includes("API key")) {
       return "Configuration issue on our end. Please try again shortly.";

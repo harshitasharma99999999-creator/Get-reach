@@ -227,17 +227,32 @@ const App: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-400 text-lg font-medium mb-8">
               A space for founders to share outreach tips, community discoveries, and what's working.
             </p>
-            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8">
-              <p className="text-gray-400 font-medium text-sm">Community features are coming soon. In the meantime, share your wins on X:</p>
-              <a
-                href="https://x.com/get__reach"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mt-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
-              >
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.635L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" /></svg>
-                @get__reach on X
-              </a>
+            <div className="space-y-6 text-left">
+              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8">
+                <h2 className="text-lg font-black text-gray-900 dark:text-white mb-2">GetReach Community on X</h2>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">A free group — anyone can join and share their stories, wins, and outreach tips.</p>
+                <a
+                  href="https://x.com/i/chat/group_join/g2026741130356994253/Hhr8gjbNdM"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.635L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" /></svg>
+                  Join the free community group on X
+                </a>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8">
+                <p className="text-gray-400 font-medium text-sm mb-4">Follow us for updates:</p>
+                <a
+                  href="https://x.com/get__reach"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-gray-800 dark:bg-gray-700 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-700 dark:hover:bg-gray-600 transition-all"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.635L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" /></svg>
+                  @get__reach on X
+                </a>
+              </div>
             </div>
           </div>
         )}
@@ -259,7 +274,8 @@ const App: React.FC = () => {
           <div className="max-w-2xl mx-auto px-4 py-32 flex flex-col items-center justify-center text-center">
             <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-2xl p-10 w-full">
               <h2 className="text-2xl font-black text-red-600 dark:text-red-400 mb-3">Analysis failed</h2>
-              <p className="text-gray-600 dark:text-gray-300 font-medium mb-6">{error}</p>
+              <p className="text-gray-600 dark:text-gray-300 font-medium mb-4">{error}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">If you keep seeing this, the free tier limit for today was likely reached. Quota resets at midnight PT.</p>
               <button onClick={handleReset} className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-3.5 rounded-xl font-black hover:bg-gray-800 dark:hover:bg-gray-100 transition-all active:scale-95">
                 Try again
               </button>
